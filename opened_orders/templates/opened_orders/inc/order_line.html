@@ -1,0 +1,12 @@
+<tr class="clickable-row_unp" id="{{ item.uuid }}"
+    data-href="{% url 'opened_orders:order_edit' item.uuid %}">
+    <td>{{ item.created_at }}</td>
+    <td>{{ item.load_date }}</td>
+    <td>{{ item.load_city.full_name }}</td>
+    <td>{{ item.unload_date }}</td>
+    <td>{{ item.upload_city.full_name }}</td>
+    <td>{{ item.vehicle_type }}</td>
+    <td>{{ item.cargo_weight }}</td>
+    <td>{{ item.cargo_price_fixed }}</td>
+    <td>{{ item.state }}</td>
+</tr>

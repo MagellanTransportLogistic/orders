@@ -1,0 +1,305 @@
+{% load static %}
+{% load users_tags %}
+{% load orders_tags %}
+{% block content %}
+    <div class="h-auto mh-40 container-fluid">
+        <form method="post"
+              enctype="multipart/form-data"
+              id="record_update">
+            {% csrf_token %}
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Редактировать заявку</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="row">
+                        <div class="col" disabled hidden>
+                            {{ form.uuid }}
+                            {{ form.created_at }}
+                            {{ form.author }}
+                        </div>
+                        <div class="col">
+                            <label for="id_created_at"> Дата создания:</label>
+                            <input class="form-control" id="id_created_at" maxlength="256" name="created_at_text"
+                                   type="text" value="{% convert_date object.created_at %}" disabled>
+                        </div>
+                        <div class="col">
+                            <label for="id_author_text"> Автор заявки:</label>
+                            <input class="form-control" id="id_author_text" maxlength="256" name="author_text"
+                                   type="text" value="{% user_login_name_by_user_order_uuid object.author_id %}"
+                                   disabled>
+                        </div>
+                        <div class="col">
+                            <label for="id_editor_text"> Редактор заявки:</label>
+                            <input class="form-control" id="id_editor_text" maxlength="256" name="editor_text"
+                                   type="text" value="{% user_login_name_by_user_order_uuid object.editor_id %}"
+                                   disabled>
+                        </div>
+                        <div class="col">
+                            {{ form.state.label_tag }}
+                            {{ form.state }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            {{ form.load_date.label_tag }}
+                            <div id="load_date" class="input-group date" data-date-format="dd.mm.yyyy">
+                                {{ form.load_date }}
+                                <div class="input-group-addon input-group-append input-group-text">
+                                    <i class="bi-calendar"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            {{ form.unload_date.label_tag }}
+                            <div id="unload_date" class="input-group date" data-date-format="dd.mm.yyyy">
+                                {{ form.unload_date }}
+                                <div class="input-group-addon input-group-append input-group-text">
+                                    <i class="bi-calendar"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            {{ form.load_city.label_tag }}
+                            <input class="form-select" id="id_load_city" name="load_city" required="" type="text"
+                                   value="{{ item.load_city.full_name }}">
+                            <ul class="dropdown-menu dropdown-menu_scroll" id="sr_load_city"></ul>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            {{ form.ext_upload_city.label_tag }}
+                            <input class="form-select" id="id_ext_upload_city" name="ext_upload_city" required=""
+                                   type="text"
+                                   value="{{ item.ext_upload_city.full_name }}">
+                            <ul class="dropdown-menu dropdown-menu_scroll" id="sr_ext_upload_city"></ul>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            {{ form.upload_city.label_tag }}
+                            <input class="form-select" id="id_upload_city" name="upload_city" required=""
+                                   type="text"
+                                   value="{{ item.upload_city.full_name }}">
+                            <ul class="dropdown-menu dropdown-menu_scroll" id="sr_upload_city"></ul>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            {{ form.vehicle_type.label_tag }}
+                            {{ form.vehicle_type }}
+                        </div>
+                        <div class="col">
+                            {{ form.cargo_type.label_tag }}
+                            {{ form.cargo_type }}
+                        </div>
+                        <div class="col">
+                            {{ form.cargo_ext_params.label_tag }}
+                            {{ form.cargo_ext_params }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            {{ form.cargo_weight.label_tag }}
+                            {{ form.cargo_weight }}
+                        </div>
+                        <div class="col">
+                            {{ form.cargo_price_fixed.label_tag }}
+                            {{ form.cargo_price_fixed }}
+                        </div>
+                        <div class="col">
+                            {{ form.cargo_price_floated.label_tag }}
+                            {{ form.cargo_price_floated }}
+                        </div>
+                    </div>
+                    <div class="col">
+                        {{ form.comments.label_tag }}
+                        {{ form.comments }}
+                    </div>
+                </div>
+            </div>
+            <div>
+                <p id="errors"></p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline-secondary" type="button"
+                        onclick="save_modal_data('{% url 'opened_orders:order_update' %}')"><i
+                        class="bi bi-check"></i>
+                    &nbsp;Сохранить
+                </button>
+                <button class="btn btn-outline-secondary" id="close_modal" type="button"><i
+                        class="bi bi-door-closed"></i>
+                    &nbsp;Закрыть
+                </button>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+{% block script %}
+    <script src="{% static 'own/form_serialize.js' %}"></script>
+    <script src="{% static 'own/date_picker.js' %}"></script>
+    <script>
+        document.getElementById('close_modal').addEventListener('click', function (e) {
+            $("#ModalWindow").modal("hide");
+            $("#ModalWindow .modal-body").html("");
+        });
+    </script>
+    <script>
+        function save_modal_data(_url) {
+            $.ajax({
+                    type: "POST",
+                    dataType: 'json',
+                    url: _url,
+                    data: get_form_serialize("#ModalWindow"),
+                    success:
+                        function callback(response) {
+                            if (response.result === 1) {
+                                document.getElementById(response.object).innerHTML = response.data
+                                $("#ModalWindow").modal("hide");
+                                $("#ModalWindow .modal-content").html('');
+                            }
+                            if (response.result === -1) {
+                                document.getElementById("errors").innerHTML = response.data
+                            }
+                        }
+                }
+            )
+            ;
+        }
+    </script>
+    <script>
+        $('#id_load_city').on('input', function () {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(function () {
+                const searchText = $('#id_load_city').val().trim();
+                if (searchText.length > 0) {
+                    $.ajax({
+                        url: `{% url 'opened_orders:search_city' %}?name=${searchText}`,
+                        method: 'GET',
+                        dataType: 'json',
+                        success: function (data) {
+                            displayResults(data);
+                        },
+                        error: function (error) {
+                            console.error(error);
+                        }
+                    });
+                } else {
+                    displayResults([]);
+                }
+            }, 300);
+        });
+
+        function displayResults(results) {
+            if (results.length === 0) {
+                $('#sr_load_city').hide().empty();
+                return;
+            }
+            const resultList = results.map(item => `<li><a class="dropdown-item gx-5" href="#">${item.full_name}</a></li>`).join('');
+            $('#sr_load_city').html(resultList).show();
+        }
+
+        $('#sr_load_city').on('click', 'li', function () {
+            const selectedResult = $(this).text();
+            $('#id_load_city').val(selectedResult);
+            $('#sr_load_city').hide();
+        });
+
+        $(document).on('click', function (event) {
+            if (!$('#sr_load_city').is(event.target) && !$('#id_load_city').is(event.target)) {
+                $('#sr_load_city').hide();
+            }
+        });
+    </script>
+    <script>
+        $('#id_upload_city').on('input', function () {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(function () {
+                const searchText = $('#id_upload_city').val().trim();
+                if (searchText.length > 0) {
+                    $.ajax({
+                        url: `{% url 'opened_orders:search_city' %}?name=${searchText}`,
+                        method: 'GET',
+                        dataType: 'json',
+                        success: function (data) {
+                            displayResults_upload(data);
+                        },
+                        error: function (error) {
+                            console.error(error);
+                        }
+                    });
+                } else {
+                    displayResults_upload([]);
+                }
+            }, 300);
+        });
+
+        function displayResults_upload(results) {
+            if (results.length === 0) {
+                $('#sr_upload_city').hide().empty();
+                return;
+            }
+            const resultList = results.map(item => `<li><a class="dropdown-item gx-5" href="#">${item.full_name}</a></li>`).join('');
+            $('#sr_upload_city').html(resultList).show();
+        }
+
+        $('#sr_upload_city').on('click', 'li', function () {
+            const selectedResult = $(this).text();
+            $('#id_upload_city').val(selectedResult);
+            $('#sr_upload_city').hide();
+        });
+
+        $(document).on('click', function (event) {
+            if (!$('#sr_upload_city').is(event.target) && !$('#id_upload_city').is(event.target)) {
+                $('#sr_upload_city').hide();
+            }
+        });
+    </script>
+    <script>
+        $('#id_ext_upload_city').on('input', function () {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(function () {
+                const searchText = $('#id_ext_upload_city').val().trim();
+                if (searchText.length > 0) {
+                    $.ajax({
+                        url: `{% url 'opened_orders:search_city' %}?name=${searchText}`,
+                        method: 'GET',
+                        dataType: 'json',
+                        success: function (data) {
+                            displayResults_ext_upload(data);
+                        },
+                        error: function (error) {
+                            console.error(error);
+                        }
+                    });
+                } else {
+                    displayResults_ext_upload([]);
+                }
+            }, 300);
+        });
+
+        function displayResults_ext_upload(results) {
+            if (results.length === 0) {
+                $('#sr_ext_upload_city').hide().empty();
+                return;
+            }
+            const resultList = results.map(item => `<li><a class="dropdown-item gx-5" href="#">${item.full_name}</a></li>`).join('');
+            $('#sr_ext_upload_city').html(resultList).show();
+        }
+
+        $('#sr_ext_upload_city').on('click', 'li', function () {
+            const selectedResult = $(this).text();
+            $('#id_ext_upload_city').val(selectedResult);
+            $('#sr_ext_upload_city').hide();
+        });
+
+        $(document).on('click', function (event) {
+            if (!$('#sr_ext_upload_city').is(event.target) && !$('#id_ext_upload_city').is(event.target)) {
+                $('#sr_ext_upload_city').hide();
+            }
+        });
+    </script>
+{% endblock %}

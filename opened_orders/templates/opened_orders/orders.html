@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+    <div class="container-fluid">
+        <div class="row row-cols-auto h-25" style="margin-top: 10px;margin-bottom: 2px;">
+            <div class="col">
+                <a id="new_record" class="btn btn-outline-secondary bg-gradient"
+                   data-href="{% url 'opened_orders:order_create' %}"><i
+                        class="bi bi-database-add"></i>
+                    Добавить заявку
+                </a>
+            </div>
+            <div class="col">
+                <form method="get">
+                    <div id="select_group" class="input-group">
+                        <label for="select_group" class="form-control bi bi-filter-right">Отборы</label>
+                        {{ filter.form.state_id }}
+                        <button class="btn btn-outline-secondary" type="submit"><i class="bi bi-filter-square"></i>
+                            Отбор
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="card mb-4" style="margin-top: 5px;margin-bottom: 5px;">
+            <div class="card-header small"><i class="bi bi-table"></i> Список заявок</div>
+            <div class="card-body">
+                <table id="datatable" class="table table-bordered table-hover table-striped table-sm"
+                       data-href="#">
+                    <thead>
+                    <tr>
+                        <th scope="col">Дата создания</th>
+                        <th scope="col">Дата погрузки</th>
+                        <th scope="col">Город погрузки</th>
+                        <th scope="col">Дата разгрузки</th>
+                        <th scope="col">Город разгрузки</th>
+                        <th scope="col">Тип автомобиля</th>
+                        <th scope="col">Вес груза</th>
+                        <th scope="col">Стоимость перевозки</th>
+                        <th scope="col">Статус</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for item in object_list %}
+                        {% include 'opened_orders/inc/order_line.html' %}
+                    {% endfor %}
+                    </tbody>
+                </table>
+                {% include 'pagination.html' %}
+            </div>
+        </div>
+    </div>
+    {% include 'modal_window.html' %}
+{% endblock %}
+{% block script %}
+    <script>
+        let debounceTimer;
+    </script>
+    <script src="{% static 'own/datatables_styled.js' %}"></script>
+    <script src="{% static 'own/modal_open_exist.js' %}"></script>
+    <script src="{% static 'own/modal_open_new.js' %}"></script>
+{% endblock %}
