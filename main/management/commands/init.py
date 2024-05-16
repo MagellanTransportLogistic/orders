@@ -57,7 +57,7 @@ class Command(BaseCommand):
                 city['creator_id'] = 1
                 city['name'] = str(city['name']).rstrip().lstrip()
                 obj = City(**city)
-                if City.objects.filter(name=city['name']).count() == 0:
+                if City.objects.filter(uuid=city['uuid']).count() == 0:
                     obj.save()
 
         if OrderUserDepartment.objects.all().count() < 2:
