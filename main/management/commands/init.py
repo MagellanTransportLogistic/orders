@@ -36,7 +36,7 @@ class Command(BaseCommand):
 
             User.objects.create(
                 id=2, username='kerleada',
-                password='pbkdf2_sha256$720000$422UTGSM14RyIbOM0ybtEu$xDPnuKt8FwG748ZxIvN/0YtLiLKsvRIArlPyEZDKHDE=',
+                password='pbkdf2_sha256$720000$onAjV8vIe6LYNqZ6m6vPVY$LGEJgQNSJLV3bJh2iUCJWvJcZiRqMJ4NolfiVDXWIjs=',
                 email='e.morin@magellan.ru', is_staff=True, is_active=True, is_superuser=True, first_name='Егор',
                 last_name='Морин')
 
