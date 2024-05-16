@@ -62,7 +62,8 @@ class SearchCity(ListView):
                 data = City.objects.filter(name__contains=name_param).order_by('name').values('uuid', 'full_name')[
                        :150]
             else:
-                data = City.objects.filter(Q(name__iregex=name_param)).order_by('name').values('uuid', 'full_name')[:150]
+                data = City.objects.filter(Q(name__iregex=name_param)).order_by('name').values('uuid', 'full_name')[
+                       :150]
             if self.is_ajax:
                 return JsonResponse(list(data), safe=False)
             return JsonResponse(list(data), safe=False)
