@@ -64,7 +64,7 @@ class Systems(models.Model):
 
 class UserSystem(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, unique=True)
-    user_id = models.ForeignKey(UserProfile, db_column='user_id', verbose_name='Профиль', default=uuid.uuid4(),
+    user_id = models.ForeignKey(UserProfile, db_column='user_id', verbose_name='Профиль', default=uuid.uuid4,
                                 on_delete=models.CASCADE)
     user_system = models.ForeignKey(Systems, db_column='system_uuid', verbose_name='Система', null=False,
                                     on_delete=models.CASCADE)

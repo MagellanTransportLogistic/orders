@@ -7,7 +7,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -31,13 +30,17 @@ class Migration(migrations.Migration):
             name='UserProfile',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('user_uuid', models.UUIDField(db_index=True, default=uuid.uuid4, unique=True, verbose_name='Идентификатор')),
+                ('user_uuid',
+                 models.UUIDField(db_index=True, default=uuid.uuid4, unique=True, verbose_name='Идентификатор')),
                 ('creation_datetime', models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')),
                 ('birthday', models.DateField(default='2001-01-01', verbose_name='Дата рождения')),
                 ('about', models.TextField(blank=True, null=True, verbose_name='О себе')),
-                ('gender', models.CharField(blank=True, choices=[('Мужской', 'Мужской'), ('Женский', 'Женский'), ('Не указан', 'Не указан')], default='Не указан', max_length=16, verbose_name='Пол')),
+                ('gender', models.CharField(blank=True, choices=[('Мужской', 'Мужской'), ('Женский', 'Женский'),
+                                                                 ('Не указан', 'Не указан')], default='Не указан',
+                                            max_length=16, verbose_name='Пол')),
                 ('phone_number', models.CharField(max_length=16, verbose_name='Номер телефона')),
-                ('userid', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                ('userid',
+                 models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
             options={
                 'verbose_name': 'Профиль',
@@ -49,9 +52,14 @@ class Migration(migrations.Migration):
             name='UserSystem',
             fields=[
                 ('id', models.UUIDField(default=uuid.uuid4, primary_key=True, serialize=False, unique=True)),
-                ('user_uuid', models.UUIDField(db_column='user_system_uuid', db_index=True, verbose_name='Идентификатор пользователя в системе')),
-                ('user_id', models.ForeignKey(db_column='user_id', default=uuid.UUID('18e97b62-e4d5-4e80-9666-54572650b0d1'), on_delete=django.db.models.deletion.CASCADE, to='users.userprofile', verbose_name='Профиль')),
-                ('user_system', models.ForeignKey(db_column='system_uuid', on_delete=django.db.models.deletion.CASCADE, to='users.systems', verbose_name='Система')),
+                ('user_uuid', models.UUIDField(db_column='user_system_uuid', db_index=True,
+                                               verbose_name='Идентификатор пользователя в системе')),
+                ('user_id',
+                 models.ForeignKey(db_column='user_id', default=uuid.UUID('18e97b62-e4d5-4e80-9666-54572650b0d1'),
+                                   on_delete=django.db.models.deletion.CASCADE, to='users.userprofile',
+                                   verbose_name='Профиль')),
+                ('user_system', models.ForeignKey(db_column='system_uuid', on_delete=django.db.models.deletion.CASCADE,
+                                                  to='users.systems', verbose_name='Система')),
             ],
             options={
                 'verbose_name': 'Интеграционные данные профилей',
