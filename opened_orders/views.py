@@ -9,6 +9,7 @@ from django.urls import reverse_lazy
 from django.views.generic import FormView, DetailView, ListView, TemplateView, CreateView
 from django.views.generic.edit import BaseFormView, UpdateView
 
+from magellan_web import settings
 from magellan_web.mixin import *
 from .models import *
 from .forms import *
@@ -57,7 +58,11 @@ class SearchCity(ListView):
 
         name_param = request.GET.get('name', None)
         if name_param is not None:
-            data = City.objects.filter(Q(name__iregex=name_param)).order_by('name').values('uuid', 'full_name')[:150]
+            if settings.DATABASES.get('default')['ENGINE'] == 'mssql':
+                data = City.objects.filter(name__contains=name_param).order_by('name').values('uuid', 'full_name')[
+                       :150]
+            else:
+                data = City.objects.filter(Q(name__iregex=name_param)).order_by('name').values('uuid', 'full_name')[:150]
             if self.is_ajax:
                 return JsonResponse(list(data), safe=False)
             return JsonResponse(list(data), safe=False)
