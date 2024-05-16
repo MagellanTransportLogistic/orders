@@ -27,13 +27,19 @@ class Command(BaseCommand):
             User.objects.create(
                 id=1, username='dark',
                 password='pbkdf2_sha256$720000$422UTGSM14RyIbOM0ybtEu$xDPnuKt8FwG748ZxIvN/0YtLiLKsvRIArlPyEZDKHDE=',
-                email='a.kovalenko@magellan.ru', is_staff=True, is_active=True, is_superuser=True)
+                email='a.kovalenko@magellan.ru', is_staff=True, is_active=True, is_superuser=True, first_name='Андрей',
+                last_name='Коваленко')
+
+        role = OrderUserProfile.objects.get(user_id=1)
+        role.role_id = OrderUserRole.objects.get(uuid='780cbaa3de03458eb6761cefb34e1791')
+        role.save()
 
         if City.objects.all().count() == 0:
             print('Creating default locations...')
 
-            obj = City(uuid='00000000-0000-0000-0000-000000000000', name='Нет', full_name='Нет', creator_id=1)
-            if City.objects.filter(name='Нет').count() == 0:
+            obj = City(uuid='00000000-0000-0000-0000-000000000000', code='0000000000000', name='Нет', full_name='Нет',
+                       creator_id=1)
+            if City.objects.filter(uuid='00000000-0000-0000-0000-000000000000').count() == 0:
                 obj.save()
 
             data = read_json('locations.json')
