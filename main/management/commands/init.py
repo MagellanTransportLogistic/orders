@@ -30,9 +30,19 @@ class Command(BaseCommand):
                 email='a.kovalenko@magellan.ru', is_staff=True, is_active=True, is_superuser=True, first_name='Андрей',
                 last_name='Коваленко')
 
-        role = OrderUserProfile.objects.get(user_id=1)
-        role.role_id = OrderUserRole.objects.get(uuid='780cbaa3de03458eb6761cefb34e1791')
-        role.save()
+            role = OrderUserProfile.objects.get(user_id=1)
+            role.role_id = OrderUserRole.objects.get(uuid='780cbaa3de03458eb6761cefb34e1791')
+            role.save()
+
+            User.objects.create(
+                id=2, username='kerleada',
+                password='pbkdf2_sha256$720000$422UTGSM14RyIbOM0ybtEu$xDPnuKt8FwG748ZxIvN/0YtLiLKsvRIArlPyEZDKHDE=',
+                email='e.morin@magellan.ru', is_staff=True, is_active=True, is_superuser=True, first_name='Егор',
+                last_name='Морин')
+
+            role = OrderUserProfile.objects.get(user_id=2)
+            role.role_id = OrderUserRole.objects.get(uuid='780cbaa3de03458eb6761cefb34e1791')
+            role.save()
 
         if City.objects.all().count() == 0:
             print('Creating default locations...')
