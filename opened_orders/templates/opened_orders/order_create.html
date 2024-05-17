@@ -33,7 +33,7 @@
                 <div class="row d-flex align-items-end">
                     <div class="col input-group-sm">
                         {{ form.load_date.label_tag }}
-                        <div id="load_date" class="input-group input-group-sm date" data-date-format="dd.mm.yyyy">
+                        <div id="div_load_date" class="input-group input-group-sm date" data-date-format="dd.mm.yyyy">
                             {{ form.load_date }}
                             <div class="input-group-addon input-group-append input-group-text">
                                 <i class="bi-calendar"></i>
@@ -42,7 +42,7 @@
                     </div>
                     <div class="col input-group-sm">
                         {{ form.unload_date.label_tag }}
-                        <div id="unload_date" class="input-group input-group-sm date" data-date-format="dd.mm.yyyy">
+                        <div id="div_unload_date" class="input-group input-group-sm date" data-date-format="dd.mm.yyyy">
                             {{ form.unload_date }}
                             <div class="input-group-addon input-group-append input-group-text">
                                 <i class="bi-calendar"></i>
@@ -158,10 +158,10 @@
     }
 </script>
 <script>
-    $('#id_load_city').on('input', function () {
+    $('#load_city').on('input', function () {
         clearTimeout(debounceTimer);
         debounceTimer = setTimeout(function () {
-            const searchText = $('#id_load_city').val().trim();
+            const searchText = $('#load_city').val().trim();
             if (searchText.length > 0) {
                 $.ajax({
                     url: `{% url 'opened_orders:search_city' %}?name=${searchText}`,
@@ -191,21 +191,21 @@
 
     $('#sr_load_city').on('click', 'li', function () {
         const selectedResult = $(this).text();
-        $('#id_load_city').val(selectedResult);
+        $('#load_city').val(selectedResult);
         $('#sr_load_city').hide();
     });
 
     $(document).on('click', function (event) {
-        if (!$('#sr_load_city').is(event.target) && !$('#id_load_city').is(event.target)) {
+        if (!$('#sr_load_city').is(event.target) && !$('#load_city').is(event.target)) {
             $('#sr_load_city').hide();
         }
     });
 </script>
 <script>
-    $('#id_upload_city').on('input', function () {
+    $('#upload_city').on('input', function () {
         clearTimeout(debounceTimer);
         debounceTimer = setTimeout(function () {
-            const searchText = $('#id_upload_city').val().trim();
+            const searchText = $('#upload_city').val().trim();
             if (searchText.length > 0) {
                 $.ajax({
                     url: `{% url 'opened_orders:search_city' %}?name=${searchText}`,
@@ -235,21 +235,21 @@
 
     $('#sr_upload_city').on('click', 'li', function () {
         const selectedResult = $(this).text();
-        $('#id_upload_city').val(selectedResult);
+        $('#upload_city').val(selectedResult);
         $('#sr_upload_city').hide();
     });
 
     $(document).on('click', function (event) {
-        if (!$('#sr_upload_city').is(event.target) && !$('#id_upload_city').is(event.target)) {
+        if (!$('#sr_upload_city').is(event.target) && !$('#upload_city').is(event.target)) {
             $('#sr_upload_city').hide();
         }
     });
 </script>
 <script>
-    $('#id_ext_upload_city').on('input', function () {
+    $('#ext_upload_city').on('input', function () {
         clearTimeout(debounceTimer);
         debounceTimer = setTimeout(function () {
-            const searchText = $('#id_ext_upload_city').val().trim();
+            const searchText = $('#ext_upload_city').val().trim();
             if (searchText.length > 0) {
                 $.ajax({
                     url: `{% url 'opened_orders:search_city' %}?name=${searchText}`,
@@ -279,12 +279,12 @@
 
     $('#sr_ext_upload_city').on('click', 'li', function () {
         const selectedResult = $(this).text();
-        $('#id_ext_upload_city').val(selectedResult);
+        $('#ext_upload_city').val(selectedResult);
         $('#sr_ext_upload_city').hide();
     });
 
     $(document).on('click', function (event) {
-        if (!$('#sr_ext_upload_city').is(event.target) && !$('#id_ext_upload_city').is(event.target)) {
+        if (!$('#sr_ext_upload_city').is(event.target) && !$('#ext_upload_city').is(event.target)) {
             $('#sr_ext_upload_city').hide();
         }
     });
