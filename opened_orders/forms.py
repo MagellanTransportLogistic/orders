@@ -6,6 +6,19 @@ from django.forms import formset_factory
 from django.forms import Form
 from .models import *
 
+placeholders = {
+    'load_city': 'Введите город погрузки',
+    'ext_upload_city': 'Введите промежуточный город выгрузки',
+    'upload_city': 'Введите город выгрузки',
+    'vehicle_type': 'Введите тип транспорта',
+    'cargo_type': 'Укажите тип груза',
+    'cargo_ext_params': 'Введите доп. параметры груза',
+    'cargo_weight': 'Вес груза (в тоннах)',
+    'cargo_price_fixed': 'Цена (руб.)',
+    'cargo_price_floated': 'Цена (руб.)',
+    'comments': 'Комментарий к заявке'
+}
+
 
 class CustomChoiceField(forms.ModelChoiceField):
 
@@ -44,6 +57,7 @@ class FormOpenedOrderModify(forms.ModelForm):
         super(FormOpenedOrderModify, self).__init__(*args, **kwargs)
 
         for field_name, field in self.fields.items():
+            field.widget.attrs['placeholder'] = placeholders.get(field_name, '')
             field.widget.attrs['name'] = field_name
             field.widget.attrs['autocomplete'] = 'off'
             if isinstance(field, forms.CharField):
@@ -62,7 +76,7 @@ class FormOpenedOrderModify(forms.ModelForm):
                 field.widget.attrs['id'] = field_name
                 field.widget.attrs['readonly'] = True
             if isinstance(field, forms.ModelChoiceField):
-                field.widget.attrs['class'] = 'form-select'
+                field.widget.attrs['class'] = 'form-control'
 
         self.fields['created_at'].initial = OpenedOrder.objects.get(uuid=self.instance.uuid).created_at
 
@@ -108,6 +122,7 @@ class FormOpenedOrderCreate(forms.ModelForm):
 
         for field_name, field in self.fields.items():
             field.widget.attrs['name'] = field_name
+            field.widget.attrs['placeholder'] = placeholders.get(field_name, '')
             field.widget.attrs['autocomplete'] = 'off'
             if isinstance(field, forms.CharField):
                 field.widget.attrs['class'] = 'form-control'
@@ -125,7 +140,7 @@ class FormOpenedOrderCreate(forms.ModelForm):
                 field.widget.attrs['id'] = field_name
                 field.widget.attrs['readonly'] = True
             if isinstance(field, forms.ModelChoiceField):
-                field.widget.attrs['class'] = 'form-select'
+                field.widget.attrs['class'] = 'form-control'
 
         self.fields['created_at'].initial = datetime.datetime.now()
         self.fields['load_date'].initial = datetime.datetime.now()

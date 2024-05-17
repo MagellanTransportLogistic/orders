@@ -3,7 +3,7 @@ from datetime import datetime
 from django import template
 
 from main.models import City
-from opened_orders.models import OrderUserRole, OrderUserProfile
+from opened_orders.models import OrderUserRole, OrderUserProfile, OpenedOrder
 
 register = template.Library()
 
@@ -40,3 +40,10 @@ def get_date_only(date_time):
 @register.simple_tag(name='get_city_name')
 def get_city_name_by_id(city_uuid):
     return City.objects.get(uuid=city_uuid).name
+
+
+@register.simple_tag(name='get_cost_value')
+def get_cost_value_by_id(order_uuid):
+    cargo_price_fixed = OpenedOrder.objects.get(uuid=order_uuid).cargo_price_fixed
+    cargo_price_floated = OpenedOrder.objects.get(uuid=order_uuid).cargo_price_floated
+    return cargo_price_fixed if cargo_price_fixed > cargo_price_floated else cargo_price_floated

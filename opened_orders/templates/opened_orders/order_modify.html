@@ -64,26 +64,24 @@
                 <div class="row d-flex align-items-end">
                     <div class="col input-group-sm">
                         {{ form.load_city.label_tag }}
-                        <input class="form-select" id="id_load_city" name="load_city" required="" type="text"
-                               value="{{ item.load_city.full_name }}">
+                        <input autocomplete="off" class="form-control" id="id_load_city" name="load_city"
+                               required="" type="text" value="{{ item.load_city.full_name }}">
                         <ul class="dropdown-menu dropdown-menu_scroll" id="sr_load_city"></ul>
                     </div>
                 </div>
                 <div class="row d-flex align-items-end">
                     <div class="col input-group-sm">
                         {{ form.ext_upload_city.label_tag }}
-                        <input class="form-select" id="id_ext_upload_city" name="ext_upload_city" required=""
-                               type="text"
-                               value="{{ item.ext_upload_city.full_name }}">
+                        <input autocomplete="off" class="form-control" id="id_ext_upload_city" name="ext_upload_city"
+                               required="" type="text" value="{{ item.ext_upload_city.full_name }}">
                         <ul class="dropdown-menu dropdown-menu_scroll" id="sr_ext_upload_city"></ul>
                     </div>
                 </div>
                 <div class="row d-flex align-items-end">
                     <div class="col input-group-sm">
                         {{ form.upload_city.label_tag }}
-                        <input class="form-select" id="id_upload_city" name="upload_city" required=""
-                               type="text"
-                               value="{{ item.upload_city.full_name }}">
+                        <input autocomplete="off" class="form-control" id="id_upload_city" name="upload_city"
+                               required="" type="text" value="{{ item.upload_city.full_name }}">
                         <ul class="dropdown-menu dropdown-menu_scroll" id="sr_upload_city"></ul>
                     </div>
                 </div>
@@ -146,7 +144,7 @@
 <script>
     document.getElementById('close_modal').addEventListener('click', function (e) {
         $("#ModalWindow").modal("hide");
-        $("#ModalWindow .modal-body").html("");
+        $("#ModalWindow .modal-content").html('');
     });
 </script>
 <script>
@@ -200,7 +198,7 @@
             $('#sr_load_city').hide().empty();
             return;
         }
-        const resultList = results.map(item => `<li><a class="dropdown-item small" href="#">${item.full_name}</a></li>`).join('');
+        const resultList = results.map(item => `<li><a class="dropdown-item small text-wrap" href="#">${item.full_name}</a></li>`).join('');
         $('#sr_load_city').html(resultList).show();
     }
 
@@ -244,7 +242,7 @@
             $('#sr_upload_city').hide().empty();
             return;
         }
-        const resultList = results.map(item => `<li><a class="dropdown-item small" href="#">${item.full_name}</a></li>`).join('');
+        const resultList = results.map(item => `<li><a class="dropdown-item small text-wrap" href="#">${item.full_name}</a></li>`).join('');
         $('#sr_upload_city').html(resultList).show();
     }
 
@@ -288,7 +286,7 @@
             $('#sr_ext_upload_city').hide().empty();
             return;
         }
-        const resultList = results.map(item => `<li><a class="dropdown-item small" href="#">${item.full_name}</a></li>`).join('');
+        const resultList = results.map(item => `<li><a class="dropdown-item small text-wrap" href="#">${item.full_name}</a></li>`).join('');
         $('#sr_ext_upload_city').html(resultList).show();
     }
 

@@ -9,7 +9,7 @@
     <td>{{ item.upload_city.full_name }}</td>
     <td>{{ item.vehicle_type }}</td>
     <td>{{ item.cargo_weight }}</td>
-    <td>{{ item.cargo_price_fixed }}</td>
+    <td>{% get_cost_value item.uuid %}</td>
     <td>{% user_login_name item.author.user_id %}</td>
     <td>{% user_login_name item.editor.user_id %}</td>
     <td>{{ item.state }}</td>
