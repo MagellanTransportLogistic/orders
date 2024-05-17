@@ -185,7 +185,7 @@
             $('#sr_load_city').hide().empty();
             return;
         }
-        const resultList = results.map(item => `<li><a class="dropdown-item gx-5" href="#">${item.full_name}</a></li>`).join('');
+        const resultList = results.map(item => `<li><a class="dropdown-item small" href="#">${item.full_name}</a></li>`).join('');
         $('#sr_load_city').html(resultList).show();
     }
 
@@ -229,7 +229,7 @@
             $('#sr_upload_city').hide().empty();
             return;
         }
-        const resultList = results.map(item => `<li><a class="dropdown-item gx-5" href="#">${item.full_name}</a></li>`).join('');
+        const resultList = results.map(item => `<li><a class="dropdown-item small" href="#">${item.full_name}</a></li>`).join('');
         $('#sr_upload_city').html(resultList).show();
     }
 
@@ -273,7 +273,7 @@
             $('#sr_ext_upload_city').hide().empty();
             return;
         }
-        const resultList = results.map(item => `<li><a class="dropdown-item gx-5" href="#">${item.full_name}</a></li>`).join('');
+        const resultList = results.map(item => `<li><a class="dropdown-item small" href="#">${item.full_name}</a></li>`).join('');
         $('#sr_ext_upload_city').html(resultList).show();
     }
 
