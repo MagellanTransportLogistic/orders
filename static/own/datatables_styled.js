@@ -42,3 +42,22 @@ $(document).ready(function () {
     });
     $('.dataTables_length').addClass('bs-select');
 });
+
+// $(document).ready(function () {
+//     $('#datatable').floatThead({
+//         top: 50,
+//         position: 'fixed'
+//     });
+//
+//
+//     $('#datatable').on("floatThead", function (e, isFloated, $floatContainer) {
+//
+//         if (isFloated) {
+//             $floatContainer.addClass("floated"); // the div containing the table containing the thead
+//             $(this).addClass("floated"); // $table
+//         } else {
+//             $floatContainer.removeClass("floated");
+//             $(this).removeClass("floated");
+//         }
+//     })
+// });

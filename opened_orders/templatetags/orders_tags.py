@@ -24,9 +24,16 @@ def can_view_orders(_object, user):
 
 
 @register.simple_tag(name='convert_date')
-def get_login_full_name_by_id(date_time):
+def get_date_time(date_time):
     if isinstance(date_time, datetime):
         return date_time.strftime("%d.%m.%Y %H:%M:%S")
+    return 'Неизвестная дата'
+
+
+@register.simple_tag(name='convert_date_only')
+def get_date_only(date_time):
+    if isinstance(date_time, datetime):
+        return date_time.strftime("%d.%m.%Y")
     return 'Неизвестная дата'
 
 
