@@ -45,6 +45,7 @@ class FormOpenedOrderModify(forms.ModelForm):
 
         for field_name, field in self.fields.items():
             field.widget.attrs['name'] = field_name
+            field.widget.attrs['autocomplete'] = 'off'
             if isinstance(field, forms.CharField):
                 field.widget.attrs['class'] = 'form-control'
             if isinstance(field, forms.FloatField):
@@ -107,6 +108,7 @@ class FormOpenedOrderCreate(forms.ModelForm):
 
         for field_name, field in self.fields.items():
             field.widget.attrs['name'] = field_name
+            field.widget.attrs['autocomplete'] = 'off'
             if isinstance(field, forms.CharField):
                 field.widget.attrs['class'] = 'form-control'
             if isinstance(field, forms.FloatField):
