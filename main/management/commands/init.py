@@ -1,4 +1,5 @@
 import json
+import os
 
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import Group, Permission
@@ -18,11 +19,14 @@ def read_json(path):
         return json.loads(f.read())
 
 
+city_locations = ['locations.json', 'locations_add.json']
+
+
 class Command(BaseCommand):
     def handle(self, *args, **options):
 
         if User.objects.all().count() == 0:
-            print('Creating default users...')
+            print('Создание пользователей по умолчанию...')
             User.objects.all().delete()
             User.objects.create(
                 id=1, username='dark',
@@ -44,24 +48,31 @@ class Command(BaseCommand):
             role.role_id = OrderUserRole.objects.get(uuid='780cbaa3de03458eb6761cefb34e1791')
             role.save()
 
-        if City.objects.all().count() == 0:
-            print('Creating default locations...')
+        print('Создание данны справочника "Города"...')
+        obj = City(uuid='00000000-0000-0000-0000-000000000000', code='0000000000000', name='Нет', full_name='Нет',
+                   creator_id=1)
+        if City.objects.filter(uuid='00000000-0000-0000-0000-000000000000').count() == 0:
+            obj.save()
 
-            obj = City(uuid='00000000-0000-0000-0000-000000000000', code='0000000000000', name='Нет', full_name='Нет',
-                       creator_id=1)
-            if City.objects.filter(uuid='00000000-0000-0000-0000-000000000000').count() == 0:
-                obj.save()
-
-            data = read_json('locations.json')
-            for city in data['cities']:
-                city['creator_id'] = 1
-                city['name'] = str(city['name']).rstrip().lstrip()
-                obj = City(**city)
-                if City.objects.filter(name=city['name']).count() == 0:
-                    obj.save()
+        for file in city_locations:
+            print(f'Обработка данных файла: {file}')
+            if os.path.exists(FILE_PATH / file):
+                data = read_json(file)
+                print(f'Чтение данных файла: {file}')
+                for city in data['cities']:
+                    city['creator_id'] = 1
+                    city['name'] = str(city['name']).rstrip().lstrip()
+                    obj = City(**city)
+                    try:
+                        _get_city = City.objects.get(full_name=city['full_name'])
+                    except City.DoesNotExist:
+                        print(f"Создаю новый город: {city['full_name']}")
+                        obj.save()
+            else:
+                print(f'Файл: {file} не обнаружен. Игнорирую.')
 
         if OrderUserDepartment.objects.all().count() < 2:
-            print('Creating departments...')
+            print('Создание подразделений...')
             data = read_json('departments.json')
             for department in data['departments']:
                 obj = OrderUserDepartment(**department)

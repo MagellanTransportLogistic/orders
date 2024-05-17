@@ -25,6 +25,7 @@ def read_levels():
 
 def main():
     data = {'cities': [], 'raw': {}}
+    data2 = {'cities': []}
 
     codes = read_dependencies()
     keys = read_levels()
@@ -76,6 +77,9 @@ def main():
                     _name = f'{_name}, {text}'
         if len(_name) > 0:
             data['raw'][key]['full_name'] = _name + ', ' + data['raw'][key]['name']
+        # else:
+        #     print(data['raw'][key])
+
         for k in iter_keys:
             data['raw'][key].pop(k)
 
@@ -92,10 +96,23 @@ def main():
                     'full_name': _full_name
                 }
             )
+        else:
+            if ' г' in data['raw'][_key]['name']:
+                data2['cities'].append(
+                    {
+                        'uuid': _uuid,
+                        'code': _key,
+                        'name': data['raw'][_key],
+                        'full_name': data['raw'][_key],
+                    }
+                )
     data.pop('raw')
 
     with open('locations.json', 'w', encoding='utf8') as f:
         f.write(json.dumps(data, indent=4, ensure_ascii=False))
+
+    with open('locations_add.json', 'w', encoding='utf8') as f:
+        f.write(json.dumps(data2, indent=4, ensure_ascii=False))
 
 
 main()
