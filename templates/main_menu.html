@@ -22,8 +22,8 @@
             {% endif %}
         </li>
     </ul>
-    {% if user.is_authenticated %}
     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        {% if user.is_authenticated %}
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownUser" role="button"
                data-bs-toggle="dropdown" aria-expanded="false">
