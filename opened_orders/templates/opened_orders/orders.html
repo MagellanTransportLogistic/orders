@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-    <div class="container-fluid">
-        <div class="row row-cols-auto h-25" style="margin-top: 10px;margin-bottom: 2px;">
+    <div class="container-fluid small">
+        <div class="row row-cols-auto" style="margin-top: 3px;margin-bottom: 3px;">
             <div class="col">
                 <a id="new_record" class="btn btn-outline-secondary bg-gradient"
                    data-href="{% url 'opened_orders:order_create' %}"><i
@@ -22,8 +22,8 @@
                 </form>
             </div>
         </div>
-        <div class="card mb-4" style="margin-top: 5px;margin-bottom: 5px;">
-            <div class="card-header small"><i class="bi bi-table"></i> Список заявок</div>
+        <div class="card mb-auto" style="margin-top: 1px;margin-bottom: 1px;">
+<!--            <div class="card-header"><i class="bi bi-table"></i> Список заявок</div>-->
             <div class="card-body">
                 <table id="datatable" class="table table-bordered table-hover table-striped table-sm"
                        data-href="#">

@@ -95,7 +95,7 @@ class OrderCreate(BaseClassContextMixin, CreateView):
                 request.POST['load_city'] = City.objects.get(full_name=request.POST['load_city'])
                 request.POST['ext_upload_city'] = City.objects.get(full_name=request.POST['ext_upload_city'])
                 request.POST['upload_city'] = City.objects.get(full_name=request.POST['upload_city'])
-                request.POST['author'] = OrderUserProfile.objects.get(uuid=request.POST['author'])
+                request.POST['author'] = OrderUserProfile.objects.get(user_id=request.user.id)
                 request.POST['editor'] = OrderUserProfile.objects.get(user_id=request.user.id)
 
                 form = self.form_class(data=request.POST, initial={
