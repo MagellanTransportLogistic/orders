@@ -102,8 +102,8 @@ def main():
                     {
                         'uuid': _uuid,
                         'code': _key,
-                        'name': data['raw'][_key],
-                        'full_name': data['raw'][_key],
+                        'name': data['raw'][_key]['name'],
+                        'full_name': data['raw'][_key]['name'],
                     }
                 )
     data.pop('raw')

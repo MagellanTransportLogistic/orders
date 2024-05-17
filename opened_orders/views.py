@@ -60,10 +60,10 @@ class SearchCity(ListView):
         if name_param is not None:
             if settings.DATABASES.get('default')['ENGINE'] == 'mssql':
                 data = City.objects.filter(name__contains=name_param).order_by('name').values('uuid', 'full_name')[
-                       :150]
+                       :500]
             else:
                 data = City.objects.filter(Q(name__iregex=name_param)).order_by('name').values('uuid', 'full_name')[
-                       :150]
+                       :500]
             if self.is_ajax:
                 return JsonResponse(list(data), safe=False)
             return JsonResponse(list(data), safe=False)
