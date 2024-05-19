@@ -126,8 +126,6 @@ class OrderUserDepartment(models.Model):
 class OrderUserRole(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, db_column='uuid', editable=False)
     name = models.CharField(verbose_name='Имя роли', max_length=64, unique=True, db_column='name')
-    department = models.ForeignKey(OrderUserDepartment, on_delete=models.CASCADE, db_column='department',
-                                   default='c9940d97-0bdc-4d89-8808-7a1c57572816')
     have_access = models.BooleanField(verbose_name='Доступ к системе заявок', default=True, db_column='have_access')
     can_take_orders = models.BooleanField(verbose_name='Принимает заявки', default=False, db_column='can_take_orders')
     can_close_orders = models.BooleanField(verbose_name='Закрывает заявки', default=False, db_column='can_close_orders')
@@ -182,9 +180,11 @@ class OrderUserProfile(models.Model):
     user_id = models.OneToOneField(User, unique=True, null=False, db_index=True, on_delete=models.CASCADE,
                                    db_column='user_id')
     role_id = models.ForeignKey(OrderUserRole, on_delete=models.CASCADE, verbose_name='Роль', db_column='role_uuid')
+    department = models.ForeignKey(OrderUserDepartment, on_delete=models.CASCADE, db_column='department',
+                                   default='c9940d97-0bdc-4d89-8808-7a1c57572816')
 
     def __str__(self):
-        return f'{self.role_id.name} - {self.user_id.username}'
+        return f'{self.role_id.name} - {self.user_id.username} ({self.department.name})'
 
     @receiver(post_save, sender=User)
     def create_user_profile(sender, instance, created, **kwargs):
