@@ -162,3 +162,4 @@ cython_debug/
 /marking.sqlite3
 /.run/
 /data.sqlite3
+/main/json/profiles.json
