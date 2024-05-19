@@ -77,3 +77,14 @@ class Command(BaseCommand):
             for department in data['departments']:
                 obj = OrderUserDepartment(**department)
                 obj.save()
+
+        if os.path.exists(FILE_PATH / 'profiles.json'):
+            data = read_json(FILE_PATH / 'profiles.json')
+            for user in data['profiles']:
+                obj = User(**user)
+                if User.objects.filter(username=user['username']).count() == 0:
+                    obj.is_active = True
+                    obj.save()
+                for role in OrderUserProfile.objects.all():
+                    role.role_id = OrderUserRole.objects.get(uuid='780cbaa3de03458eb6761cefb34e1791')
+                    role.save()
