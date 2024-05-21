@@ -23,7 +23,8 @@ class FormOpenedOrder(forms.ModelForm):
                                     empty_label=None)
     editor = forms.ModelChoiceField(queryset=OrderUserProfile.objects.all(), disabled=True, label='Редактор',
                                     empty_label=None)
-    state = forms.ModelChoiceField(queryset=OrderState.objects.filter(order__gte=0), label='Статус', empty_label=None)
+    state = forms.ModelChoiceField(queryset=OrderState.objects.filter(order__gte=0).order_by('order'), label='Статус',
+                                   empty_label=None)
     load_date = forms.DateField(input_formats=['%d.%m.%Y'], label='Дата погрузки')
     unload_date = forms.DateField(input_formats=['%d.%m.%Y'], label='Дата разгрузки')
     load_city = CustomChoiceField(queryset=City.objects.filter(name=''), widget=forms.TextInput,
@@ -109,13 +110,24 @@ class FormOpenedOrderModify(FormOpenedOrder):
     def clean_state(self):
         new_data = self.cleaned_data['state']
         old_data = self.instance.state
-        if new_data.order - old_data.order not in [1, -1] and new_data.order != old_data.order:
-            raise ValidationError('Разрешается только последовательная смена статуса.')
+
+        # Отменен - можно ставить с любого статуса.
+        if new_data.order == 4:
+            return new_data
+
+        if new_data.order == 1:
+            return new_data
+
+        # Новый статус должен отличаться.
+        if not (new_data.order - old_data.order == 1) or (old_data.order - new_data.order == 1):
+            raise ValidationError('Разрешается только последовательная смена статусов!')
+
         return new_data
 
 
 class FormOpenedOrderCreate(FormOpenedOrder):
-    state = forms.ModelChoiceField(queryset=OrderState.objects.filter(order=1), label='Статус', empty_label=None)
+    state = forms.ModelChoiceField(queryset=OrderState.objects.filter(order=1).order_by('order'), label='Статус',
+                                   empty_label=None)
 
     def __init__(self, *args, **kwargs):
         super(FormOpenedOrderCreate, self).__init__(*args, **kwargs)
