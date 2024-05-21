@@ -119,6 +119,10 @@ class OrderCreate(BaseClassContextMixin, CreateView):
                 return JsonResponse({'result': -1, 'data': render_to_string('opened_orders/errors.html', context={
                     'errors': 'Удостоверьтесь что все адреса введены корректно!',
                 })})
+            except Exception as E:
+                return JsonResponse({'result': -1, 'data': render_to_string('opened_orders/errors.html', context={
+                    'errors': str(E),
+                })})
 
         return redirect(self.success_url)
 
@@ -172,5 +176,13 @@ class OrderModify(BaseClassContextMixin, UpdateView):
             except ValueError as E:
                 return JsonResponse({'result': -1, 'data': render_to_string('opened_orders/errors.html',
                                                                             {'errors': E.args})})
+            except City.DoesNotExist:
+                return JsonResponse({'result': -1, 'data': render_to_string('opened_orders/errors.html', context={
+                    'errors': 'Удостоверьтесь что все адреса введены корректно!',
+                })})
+            except Exception as E:
+                return JsonResponse({'result': -1, 'data': render_to_string('opened_orders/errors.html', context={
+                    'errors': str(E),
+                })})
 
         return redirect(self.success_url)
