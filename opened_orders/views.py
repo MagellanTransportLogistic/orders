@@ -20,7 +20,7 @@ from .filters import OrderFilter
 # from .filters import *
 
 # Create your views here.
-class IndexPageFormView(BaseClassContextMixin, ListView):
+class IndexPageFormView(BaseClassContextMixin, OrdersUserLoginCheckMixin, ListView):
     title = 'Компания Магеллан: Активные заявки'
     template_name = 'opened_orders/orders.html'
     model = OpenedOrder
@@ -46,7 +46,7 @@ class IndexPageFormView(BaseClassContextMixin, ListView):
         return context
 
 
-class SearchCity(ListView):
+class SearchCity(ListView, OrdersUserLoginCheckMixin):
 
     def __init__(self, **kwargs):
         super(SearchCity, self).__init__(**kwargs)
@@ -69,7 +69,7 @@ class SearchCity(ListView):
             return JsonResponse(list(data), safe=False)
 
 
-class OrderCreate(BaseClassContextMixin, CreateView):
+class OrderCreate(BaseClassContextMixin, OrdersUserLoginCheckMixin, CreateView):
     title = 'Создать заявку'
     model = OpenedOrder
     form_class = FormOpenedOrderCreate
@@ -127,7 +127,7 @@ class OrderCreate(BaseClassContextMixin, CreateView):
         return redirect(self.success_url)
 
 
-class OrderModify(BaseClassContextMixin, UpdateView):
+class OrderModify(BaseClassContextMixin, OrdersUserLoginCheckMixin, UpdateView):
     title = 'Редактировать заявку'
     model = OpenedOrder
     form_class = FormOpenedOrderModify

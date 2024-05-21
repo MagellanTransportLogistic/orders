@@ -23,7 +23,7 @@ class UserLoginView(BaseClassContextMixin, LoginView):
     title = 'Авторизация'
 
 
-class UserPasswordChangeView(SuccessMessageMixin, PasswordChangeView):
+class UserPasswordChangeView(SuccessMessageMixin, UserLoginCheckMixin, PasswordChangeView):
     """
     Изменение пароля пользователя
     """

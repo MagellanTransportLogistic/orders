@@ -4,6 +4,7 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.generic.base import ContextMixin
 from django.http import JsonResponse
+from opened_orders.models import OrderUserProfile, OrderUserRole
 
 
 class UserIsAdminCheckMixin(View):
@@ -28,6 +29,20 @@ class UserLoginCheckMixin(View):
             return super(UserLoginCheckMixin, self).dispatch(request, *args, **kwargs)
         else:
             return HttpResponseNotAllowed(request.method)
+
+
+class OrdersUserLoginCheckMixin(View):
+    @method_decorator(user_passes_test(lambda u: u.is_authenticated))
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_active:
+            profile = OrderUserProfile.objects.get(user_id=request.user.id)
+            if profile:
+                profile_access = OrderUserRole.objects.filter(uuid=profile.role_id_id).first()
+                if profile_access:
+                    if profile_access.have_access:
+                        return super(OrdersUserLoginCheckMixin, self).dispatch(request, *args, **kwargs)
+
+        return HttpResponseNotAllowed(request.method)
 
 
 class BaseClassContextMixin(ContextMixin):
