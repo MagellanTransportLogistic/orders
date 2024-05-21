@@ -78,8 +78,12 @@ class FormOpenedOrder(forms.ModelForm):
             if _initials.get(field_name, None) is not None:
                 field.initial = _initials[field_name]
 
-            if isinstance(field, (forms.CharField, forms.FloatField, forms.ModelChoiceField)):
+            if isinstance(field, (forms.CharField, forms.FloatField)):
                 field.widget.attrs['class'] = 'form-control small'
+                field.widget.attrs['autocomplete'] = 'off'
+
+            if isinstance(field, forms.ModelChoiceField):
+                field.widget.attrs['class'] = 'form-select small'
                 field.widget.attrs['autocomplete'] = 'off'
 
             if isinstance(field, forms.BooleanField):
@@ -111,6 +115,7 @@ class FormOpenedOrderModify(FormOpenedOrder):
 
 
 class FormOpenedOrderCreate(FormOpenedOrder):
+    state = forms.ModelChoiceField(queryset=OrderState.objects.filter(order=1), label='Статус', empty_label=None)
 
     def __init__(self, *args, **kwargs):
         super(FormOpenedOrderCreate, self).__init__(*args, **kwargs)
