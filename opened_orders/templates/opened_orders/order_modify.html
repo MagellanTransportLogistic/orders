@@ -71,20 +71,21 @@
                 </div>
                 <div class="row d-flex align-items-end">
                     <div class="col input-group-sm">
-                        {{ form.ext_upload_city.label_tag }}
-                        <input autocomplete="off" class="form-control" id="ext_upload_city" name="ext_upload_city"
-                               required="" type="text" value="{{ item.ext_upload_city.full_name }}">
-                        <ul class="dropdown-menu dropdown-menu_scroll" id="sr_ext_upload_city"></ul>
-                    </div>
-                </div>
-                <div class="row d-flex align-items-end">
-                    <div class="col input-group-sm">
                         {{ form.upload_city.label_tag }}
                         <input autocomplete="off" class="form-control" id="upload_city" name="upload_city"
                                required="" type="text" value="{{ item.upload_city.full_name }}">
                         <ul class="dropdown-menu dropdown-menu_scroll" id="sr_upload_city"></ul>
                     </div>
                 </div>
+                <div class="row d-flex align-items-end">
+                    <div class="col input-group-sm">
+                        {{ form.ext_upload_city.label_tag }}
+                        <input autocomplete="off" class="form-control" id="ext_upload_city" name="ext_upload_city"
+                               required="" type="text" value="{{ item.ext_upload_city.full_name }}">
+                        <ul class="dropdown-menu dropdown-menu_scroll" id="sr_ext_upload_city"></ul>
+                    </div>
+                </div>
+
                 <div class="row d-flex align-items-end">
                     <div class="col input-group-sm">
                         {{ form.vehicle_type.label_tag }}

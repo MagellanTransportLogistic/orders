@@ -59,19 +59,20 @@
                 </div>
                 <div class="row d-flex align-items-end">
                     <div class="col input-group-sm">
+                        {{ form.upload_city.label_tag }}
+                        {{ form.upload_city }}
+                        <ul class="dropdown-menu dropdown-menu_scroll" id="sr_upload_city"></ul>
+                    </div>
+                </div>
+                <div class="row d-flex align-items-end">
+                    <div class="col input-group-sm">
                         {{ form.ext_upload_city.label_tag }}
                         {{ form.ext_upload_city }}
                         <ul class="dropdown-menu dropdown-menu_scroll"
                             id="sr_ext_upload_city"></ul>
                     </div>
                 </div>
-                <div class="row d-flex align-items-end">
-                    <div class="col input-group-sm">
-                        {{ form.upload_city.label_tag }}
-                        {{ form.upload_city }}
-                        <ul class="dropdown-menu dropdown-menu_scroll" id="sr_upload_city"></ul>
-                    </div>
-                </div>
+
                 <div class="row d-flex align-items-end">
                     <div class="col input-group-sm">
                         {{ form.vehicle_type.label_tag }}
