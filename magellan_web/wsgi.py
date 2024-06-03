@@ -30,7 +30,7 @@ def start_new_thread(function):
 
 
 @start_new_thread
-def check_order_state():
+def check_order_state(repeat_delay_seconds=5):
     print(f'Loaded Orders visibility checker.')
     while True:
         time_offset = datetime.now() - timedelta(hours=2)
@@ -41,7 +41,7 @@ def check_order_state():
         for order in order_list:
             order.visibility = OpenedOrder.COMPANY
             order.save()
-        sleep(10)
+        sleep(repeat_delay_seconds)
 
 
-check_order_state()
+check_order_state(10)
