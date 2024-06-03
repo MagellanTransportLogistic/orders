@@ -1,6 +1,5 @@
 import datetime
 from copy import deepcopy
-from itertools import chain
 
 from django.db.models import Q
 from django.http import JsonResponse, HttpResponse, HttpResponseBadRequest
@@ -45,6 +44,7 @@ class IndexPageFormView(BaseClassContextMixin, OrdersUserLoginCheckMixin, ListVi
         if not _user.is_staff:
             _user_department = OrderUserProfile.objects.get(user_id=_user.id).department
             _user_organization = _user_department.organization
+
             qs_all = OrderFilter(data, OpenedOrder.objects.filter(visibility=OpenedOrder.COMPANY))
             qs_org = OrderFilter(data, OpenedOrder.objects.filter(visibility=OpenedOrder.DEPARTMENT).filter(
                 author__department__organization=_user_organization))
