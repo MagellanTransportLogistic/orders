@@ -145,7 +145,7 @@ class OrderUserOrganization(models.Model):
 
 class OrderUserDepartment(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, db_column='uuid', editable=False)
-    name = models.CharField(max_length=128, verbose_name='Наименование', unique=True)
+    name = models.CharField(max_length=128, verbose_name='Наименование')
     organization = models.ForeignKey(OrderUserOrganization, on_delete=models.CASCADE, db_column='organization',
                                      verbose_name='Организация/Филиал', default='0cff60d6-e91b-49a9-aa26-1aa944b95ae6')
 
@@ -164,7 +164,7 @@ class OrderUserDepartment(models.Model):
             p.save()
 
     def __str__(self):
-        return self.name
+        return f'{self.name} ({self.organization})'
 
     class Meta:
         db_table = 'order_user_department'
