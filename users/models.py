@@ -30,7 +30,7 @@ class UserProfile(models.Model):
     phone_number = models.CharField(max_length=16, verbose_name='Номер телефона')
 
     def __str__(self):
-        return f'{self.userid.username}, ' \
+        return f'{self.userid.last_name} {self.userid.first_name}, ' \
                f'email: {self.userid.email}, ' \
                f'создан: {self.creation_datetime}'
 

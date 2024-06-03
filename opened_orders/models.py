@@ -65,65 +65,6 @@ class OrderState(models.Model):
         verbose_name_plural = "Статусы заявок"
 
 
-class OrderUserOrganization(models.Model):
-    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, db_column='uuid', editable=False)
-    name = models.CharField(max_length=128, verbose_name='Наименование', unique=True)
-    chief = models.ForeignKey(UserProfile, on_delete=models.CASCADE, db_column='chief', verbose_name='Руководитель',
-                              null=True)
-
-    @staticmethod
-    def fill_initial_data():
-        def_organizations = [
-            {
-                "uuid": "0cff60d6-e91b-49a9-aa26-1aa944b95ae6",
-                "name": "Организация по умолчанию",
-                "chief": None
-            },
-        ]
-        for data in def_organizations:
-            p = OrderUserOrganization(**data)
-            p.save()
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        db_table = 'order_user_organization'
-        verbose_name = "Организации/Филиалы"
-        verbose_name_plural = "Организации/Филиалы"
-
-
-class OrderUserDepartment(models.Model):
-    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, db_column='uuid', editable=False)
-    name = models.CharField(max_length=128, verbose_name='Наименование', unique=True)
-    organization = models.ForeignKey(OrderUserOrganization, on_delete=models.CASCADE, db_column='organization',
-                                     verbose_name='Организация/Филиал', default='0cff60d6-e91b-49a9-aa26-1aa944b95ae6')
-    chief = models.ForeignKey(UserProfile, on_delete=models.CASCADE, db_column='chief', verbose_name='Руководитель',
-                              null=True)
-
-    @staticmethod
-    def fill_initial_data():
-        def_departments = [
-            {
-                "uuid": "c9940d97-0bdc-4d89-8808-7a1c57572816",
-                "name": "Подразделение по умолчанию",
-                "organization": OrderUserOrganization.objects.get(uuid='0cff60d6-e91b-49a9-aa26-1aa944b95ae6'),
-                "chief": None
-            },
-        ]
-        for data in def_departments:
-            p = OrderUserDepartment(**data)
-            p.save()
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        db_table = 'order_user_department'
-        verbose_name = "Подразделения"
-        verbose_name_plural = "Подразделения"
-
-
 class OrderUserRole(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, db_column='uuid', editable=False)
     name = models.CharField(verbose_name='Имя роли', max_length=64, unique=True, db_column='name')
@@ -176,6 +117,61 @@ class OrderUserRole(models.Model):
         verbose_name_plural = "Роли"
 
 
+class OrderUserOrganization(models.Model):
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, db_column='uuid', editable=False)
+    name = models.CharField(max_length=128, verbose_name='Наименование', unique=True)
+
+    @staticmethod
+    def fill_initial_data():
+        def_organizations = [
+            {
+                "uuid": "0cff60d6-e91b-49a9-aa26-1aa944b95ae6",
+                "name": "Организация по умолчанию",
+                "chief": None
+            },
+        ]
+        for data in def_organizations:
+            p = OrderUserOrganization(**data)
+            p.save()
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        db_table = 'order_user_organization'
+        verbose_name = "Организации/Филиалы"
+        verbose_name_plural = "Организации/Филиалы"
+
+
+class OrderUserDepartment(models.Model):
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, db_column='uuid', editable=False)
+    name = models.CharField(max_length=128, verbose_name='Наименование', unique=True)
+    organization = models.ForeignKey(OrderUserOrganization, on_delete=models.CASCADE, db_column='organization',
+                                     verbose_name='Организация/Филиал', default='0cff60d6-e91b-49a9-aa26-1aa944b95ae6')
+
+    @staticmethod
+    def fill_initial_data():
+        def_departments = [
+            {
+                "uuid": "c9940d97-0bdc-4d89-8808-7a1c57572816",
+                "name": "Подразделение по умолчанию",
+                "organization": OrderUserOrganization.objects.get(uuid='0cff60d6-e91b-49a9-aa26-1aa944b95ae6'),
+                "chief": None
+            },
+        ]
+        for data in def_departments:
+            p = OrderUserDepartment(**data)
+            p.save()
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        db_table = 'order_user_department'
+        verbose_name = "Подразделения"
+        verbose_name_plural = "Подразделения"
+
+
 class OrderUserProfile(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, db_column='uuid', editable=False)
     user_id = models.OneToOneField(User, unique=True, null=False, db_index=True, on_delete=models.CASCADE,
@@ -185,7 +181,7 @@ class OrderUserProfile(models.Model):
                                    default='c9940d97-0bdc-4d89-8808-7a1c57572816')
 
     def __str__(self):
-        return f'{self.role_id.name} - {self.user_id.username} ({self.department.name})'
+        return f'{self.user_id.last_name} {self.user_id.first_name} ({self.department.name})'
 
     @receiver(post_save, sender=User)
     def create_user_profile(sender, instance, created, **kwargs):
@@ -222,7 +218,7 @@ class OpenedOrder(models.Model):
 
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, verbose_name='Идентификатор')
     number = models.BigIntegerField(db_column='number', verbose_name='Номер заявки', editable=False,
-                                 auto_created=True)
+                                    auto_created=True)
     visibility = models.CharField(verbose_name='Пол', choices=VISIBILITY_CHOICES, blank=True, max_length=16,
                                   default=DIVISION)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания', db_index=True)
