@@ -19,6 +19,7 @@
                         {{ form.created_at }}
                         {{ form.author }}
                         {{ form.editor }}
+                        {{ form.number }}
                     </div>
                     <div class="col input-group-sm">
                         <label for="id_created_at"> Дата создания:</label>
@@ -28,6 +29,10 @@
                     <div class="col input-group-sm">
                         {{ form.state.label_tag }}
                         {{ form.state }}
+                    </div>
+                    <div class="col input-group-sm">
+                        {{ form.visibility.label_tag }}
+                        {{ form.visibility }}
                     </div>
                 </div>
                 <div class="row d-flex align-items-end">

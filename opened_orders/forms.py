@@ -18,6 +18,8 @@ class CustomChoiceField(forms.ModelChoiceField):
 
 class FormOpenedOrder(forms.ModelForm):
     uuid = forms.CharField(max_length=64, disabled=True, label='Идентификатор')
+    number = forms.IntegerField(disabled=True, label='Номер заявки')
+    visibility = forms.ChoiceField(choices=OpenedOrder.VISIBILITY_CHOICES, label='Видимость заявки', )
     created_at = forms.DateTimeField(disabled=True, label='Дата создания')
     author = forms.ModelChoiceField(queryset=OrderUserProfile.objects.all(), disabled=True, label='Автор',
                                     empty_label=None)
@@ -83,7 +85,7 @@ class FormOpenedOrder(forms.ModelForm):
                 field.widget.attrs['class'] = 'form-control small'
                 field.widget.attrs['autocomplete'] = 'off'
 
-            if isinstance(field, forms.ModelChoiceField):
+            if isinstance(field, (forms.ModelChoiceField, forms.ChoiceField)):
                 field.widget.attrs['class'] = 'form-select small'
                 field.widget.attrs['autocomplete'] = 'off'
 
