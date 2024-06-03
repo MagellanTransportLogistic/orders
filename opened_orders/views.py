@@ -100,7 +100,8 @@ class OrderCreate(BaseClassContextMixin, OrdersUserLoginCheckMixin, CreateView):
 
                 form = self.form_class(data=request.POST, initial={
                     'author': request.POST['author'],
-                    'editor': request.POST['editor']
+                    'editor': request.POST['editor'],
+                    'number': OpenedOrder.get_new_number()
                 })
 
                 if form.is_valid():

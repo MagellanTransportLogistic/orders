@@ -6,6 +6,7 @@ import uuid
 # from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models import Max
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from users.models import UserProfile
@@ -211,7 +212,19 @@ class OrderUserProfile(models.Model):
 
 
 class OpenedOrder(models.Model):
+    DIVISION = 'Отдел'
+    COMPANY = 'Компания'
+
+    VISIBILITY_CHOICES = (
+        (DIVISION, 'Отдел'),
+        (COMPANY, 'Компания'),
+    )
+
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, verbose_name='Идентификатор')
+    number = models.BigIntegerField(db_column='number', verbose_name='Номер заявки', editable=False,
+                                 auto_created=True)
+    visibility = models.CharField(verbose_name='Пол', choices=VISIBILITY_CHOICES, blank=True, max_length=16,
+                                  default=DIVISION)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания', db_index=True)
     author = models.ForeignKey(OrderUserProfile, on_delete=models.CASCADE, verbose_name='Автор',
                                db_column='profile_uuid', related_name='opened_orders_profile_uuid')
@@ -239,8 +252,19 @@ class OpenedOrder(models.Model):
     def __str__(self):
         return f'{self.created_at} {self.author} {self.load_city} -> {self.upload_city}, {self.cargo_price_fixed}'
 
+    @staticmethod
+    def get_new_number():
+        prefix = int(datetime.date.today().strftime('%Y%m%d'))
+        last_number = OpenedOrder.objects.filter(number__gte=int(f'{prefix}0001')).aggregate(Max('number'))[
+                          'number__max'] or 0
+        suffix = int(str(last_number).replace(str(prefix), ''))
+        suffix = suffix + 1
+        suffix = str(suffix).zfill(4)
+        return int(f'{prefix}{suffix}')
+
     class Meta:
         db_table = 'opened_orders_list'
+        indexes = [models.Index(fields=['number'], name='number')]
         verbose_name = "Открытые заявки"
         verbose_name_plural = "Открытые заявки"
         ordering = ('created_at',)
