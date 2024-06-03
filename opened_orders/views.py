@@ -1,5 +1,6 @@
 import datetime
 from copy import deepcopy
+from itertools import chain
 
 from django.db.models import Q
 from django.http import JsonResponse, HttpResponse, HttpResponseBadRequest
@@ -33,12 +34,30 @@ class IndexPageFormView(BaseClassContextMixin, OrdersUserLoginCheckMixin, ListVi
         self.is_ajax = False
 
     def get_queryset(self):
-        qs = OpenedOrder.objects.all()
         data = self.request.GET
         if data == {}:
             data = {'state_id': '92380e35-3eca-4e96-93b4-f849258478a4'}
-        self.filter_set = OrderFilter(data, queryset=qs)
-        return self.filter_set.qs
+
+        _user = self.request.user
+
+        # Нужно проверить видимость заявки
+        # Если пользователь входит в отдел, то видит заявки отдела.
+        if not _user.is_staff:
+            _user_department = OrderUserProfile.objects.get(user_id=_user.id).department
+            _user_organization = _user_department.organization
+            qs_all = OrderFilter(data, OpenedOrder.objects.filter(visibility=OpenedOrder.COMPANY))
+            qs_org = OrderFilter(data, OpenedOrder.objects.filter(visibility=OpenedOrder.DEPARTMENT).filter(
+                author__department__organization=_user_organization))
+            qs_div = OrderFilter(data, OpenedOrder.objects.filter(visibility=OpenedOrder.DIVISION).filter(
+                author__department=_user_department))
+
+            qs = qs_all.qs.union(qs_org.qs).union(qs_div.qs)
+            self.filter_set = OrderFilter(data, queryset=qs)
+            return qs.order_by('created_at')
+        else:
+            qs = OpenedOrder.objects.all()
+            self.filter_set = OrderFilter(data, queryset=qs)
+            return self.filter_set.qs.order_by('created_at')
 
     def get_context_data(self, **kwargs):
         context = super(IndexPageFormView, self).get_context_data(**kwargs)

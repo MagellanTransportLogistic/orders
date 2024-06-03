@@ -141,6 +141,7 @@ class OrderUserOrganization(models.Model):
         db_table = 'order_user_organization'
         verbose_name = "Организации/Филиалы"
         verbose_name_plural = "Организации/Филиалы"
+        ordering = ['name']
 
 
 class OrderUserDepartment(models.Model):
@@ -209,16 +210,18 @@ class OrderUserProfile(models.Model):
 
 class OpenedOrder(models.Model):
     DIVISION = 'Отдел'
+    DEPARTMENT = 'Филиал'
     COMPANY = 'Компания'
 
     VISIBILITY_CHOICES = (
         (DIVISION, 'Отдел'),
+        (DEPARTMENT, 'Филиал'),
         (COMPANY, 'Компания'),
     )
 
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, verbose_name='Идентификатор')
     number = models.BigIntegerField(db_column='number', verbose_name='Номер заявки', editable=False,
-                                    auto_created=True)
+                                    default=0)
     visibility = models.CharField(verbose_name='Пол', choices=VISIBILITY_CHOICES, blank=True, max_length=16,
                                   default=DIVISION)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания', db_index=True)
@@ -263,7 +266,7 @@ class OpenedOrder(models.Model):
         indexes = [models.Index(fields=['number'], name='number')]
         verbose_name = "Открытые заявки"
         verbose_name_plural = "Открытые заявки"
-        ordering = ('created_at',)
+        # ordering = ('created_at',)
 
 
 class OrderHistory(models.Model):
