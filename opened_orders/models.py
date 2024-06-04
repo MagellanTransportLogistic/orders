@@ -220,7 +220,7 @@ class OpenedOrder(models.Model):
     )
 
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, verbose_name='Идентификатор')
-    number = models.BigIntegerField(db_column='number', verbose_name='Номер заявки', editable=False,
+    number = models.BigIntegerField(db_column='number', verbose_name='Номер заявки',
                                     default=0)
     visibility = models.CharField(verbose_name='Пол', choices=VISIBILITY_CHOICES, blank=True, max_length=16,
                                   default=DIVISION)
@@ -253,7 +253,7 @@ class OpenedOrder(models.Model):
 
     @staticmethod
     def get_new_number():
-        prefix = int(datetime.date.today().strftime('%Y%m%d'))
+        prefix = int(datetime.date.today().strftime('%y%m%d'))
         last_number = OpenedOrder.objects.filter(number__gte=int(f'{prefix}0001')).aggregate(Max('number'))[
                           'number__max'] or 0
         suffix = int(str(last_number).replace(str(prefix), ''))
@@ -272,6 +272,7 @@ class OpenedOrder(models.Model):
 class OrderHistory(models.Model):
     values_list = [
         'author',
+        'visibility',
         'editor',
         'state',
         'load_date',

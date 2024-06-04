@@ -106,7 +106,7 @@ class FormOpenedOrderModify(FormOpenedOrder):
 
     def __init__(self, *args, **kwargs):
         super(FormOpenedOrderModify, self).__init__(*args, **kwargs)
-        self.fields['created_at'].initial = OpenedOrder.objects.get(uuid=self.instance.uuid).created_at
+        # self.fields['created_at'].initial = OpenedOrder.objects.get(uuid=self.instance.uuid).created_at
         # self.fields['load_city'].initial = City.objects.get(uuid=self.instance.load_city).full_name
 
     def clean_state(self):
@@ -133,3 +133,4 @@ class FormOpenedOrderCreate(FormOpenedOrder):
 
     def __init__(self, *args, **kwargs):
         super(FormOpenedOrderCreate, self).__init__(*args, **kwargs)
+

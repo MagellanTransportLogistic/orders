@@ -110,17 +110,20 @@ class OrderCreate(BaseClassContextMixin, OrdersUserLoginCheckMixin, CreateView):
 
         if self.is_ajax:
             try:
+                new_number = str(OpenedOrder.get_new_number())
+
                 request.POST._mutable = True
                 request.POST['load_city'] = City.objects.get(full_name=request.POST['load_city'])
                 request.POST['ext_upload_city'] = City.objects.get(full_name=request.POST['ext_upload_city'])
                 request.POST['upload_city'] = City.objects.get(full_name=request.POST['upload_city'])
                 request.POST['author'] = OrderUserProfile.objects.get(user_id=request.user.id)
                 request.POST['editor'] = OrderUserProfile.objects.get(user_id=request.user.id)
+                request.POST['number'] = new_number
 
                 form = self.form_class(data=request.POST, initial={
                     'author': request.POST['author'],
                     'editor': request.POST['editor'],
-                    'number': OpenedOrder.get_new_number()
+                    'number': new_number
                 })
 
                 if form.is_valid():
@@ -175,7 +178,9 @@ class OrderModify(BaseClassContextMixin, OrdersUserLoginCheckMixin, UpdateView):
         if self.is_ajax:
             try:
                 request.POST._mutable = True
+                order_number = OpenedOrder.objects.get(uuid=request.POST.get('uuid')).number
                 request.POST['created_at'] = OpenedOrder.objects.get(uuid=request.POST.get('uuid')).created_at
+                request.POST['visibility'] = OpenedOrder.objects.get(uuid=request.POST.get('uuid')).visibility
                 request.POST['load_city'] = City.objects.get(full_name=request.POST['load_city'])
                 request.POST['ext_upload_city'] = City.objects.get(full_name=request.POST['ext_upload_city'])
                 request.POST['upload_city'] = City.objects.get(full_name=request.POST['upload_city'])
@@ -183,7 +188,7 @@ class OrderModify(BaseClassContextMixin, OrdersUserLoginCheckMixin, UpdateView):
                 editor = OrderUserProfile.objects.get(user_id=request.user.id)
                 form = self.form_class(data=request.POST,
                                        instance=self.model.objects.get(uuid=request.POST['uuid']),
-                                       initial={'editor': editor})
+                                       initial={'editor': editor, 'number': order_number})
 
                 if form.is_valid():
                     self.object = form.save()
