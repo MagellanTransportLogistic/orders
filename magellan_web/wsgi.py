@@ -14,6 +14,7 @@ from datetime import datetime, timedelta
 from django.core.wsgi import get_wsgi_application
 
 from opened_orders.models import OpenedOrder
+from main.addons.telegram_bot.bot import load as load_telegram_bot
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'magellan_web.settings')
 
@@ -31,7 +32,7 @@ def start_new_thread(function):
 
 @start_new_thread
 def check_order_state(repeat_delay_seconds=5):
-    print(f'Loaded Orders visibility checker.')
+    print(f'Loaded Orders visibility checker.' + chr(13) + chr(10))
     while True:
         time_offset = datetime.now() - timedelta(hours=2)
         order_list = OpenedOrder.objects.filter(created_at__lte=time_offset).filter(
@@ -45,3 +46,4 @@ def check_order_state(repeat_delay_seconds=5):
 
 
 check_order_state(10)
+load_telegram_bot()

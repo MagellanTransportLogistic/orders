@@ -7,3 +7,6 @@ html5lib==1.1
 python-dotenv==1.0.1
 mssql-django==1.5
 psycopg2==2.9.9
+aiogram>=3.1
+SQLAlchemy~=2.0.31
+pyodbc~=5.1.0
