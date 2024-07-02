@@ -14,7 +14,6 @@ from datetime import datetime, timedelta
 from django.core.wsgi import get_wsgi_application
 
 from opened_orders.models import OpenedOrder
-from main.addons.telegram_bot.bot import load as load_telegram_bot
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'magellan_web.settings')
 

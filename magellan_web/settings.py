@@ -35,7 +35,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / '.env')
 
 SECRET_KEY = get_variable("ENGINE_SECRET_KEY")
-BOT_TOKEN = get_variable("BOT_TOKEN")
 DEBUG = get_variable("DEBUG", False)
 HTML_MINIFY = True
 
