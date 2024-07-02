@@ -1,21 +1,41 @@
 import asyncio
 import logging
+import os
 
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
 
-from magellan_web.settings import BOT_TOKEN, DATABASES as db
-from main.addons.telegram_bot.handlers import common, register_user, remove_user, change_user, send_doc
-from main.addons.telegram_bot.middlewares.access import UserData
-from main.addons.telegram_bot.services.database import sql_start
+from dotenv import load_dotenv
+from handlers import common, register_user, remove_user, change_user, send_doc
+from middlewares.access import UserData
+from services.database import sql_start
 
 
-# from main.addons.telegram_bot.services.database import sql_start
+def read_settings(param_name: str):
+    def get_variable(name: str, default_value: bool | None = None) -> str | None | bool:
+        true_ = ('true', '1', 't', 'yes')
+        false_ = ('false', '0', 'f', 'no')
+        value: str | None = os.getenv(name, None)
+        if value is None:
+            if default_value is None:
+                raise ValueError(f'Variable `{name}` not set!')
+            else:
+                value = str(default_value)
+        if value.lower() not in true_ + false_:
+            return value
+        return value.lower() in true_
+
+    load_dotenv('.env')
+    return get_variable(param_name)
 
 
 def create_pool():
-    sql_start(db['default']['NAME'], db['default']['HOST'], db['default']['USER'],
-              db['default']['PASSWORD'])
+    db_name = read_settings('SQL_DB_NAME')
+    db_host = read_settings('SQL_DB_HOST')
+    db_user = read_settings('SQL_DB_USER')
+    db_pasw = read_settings('SQL_DB_PASSWORD')
+
+    sql_start(db_name, db_host, db_user, db_pasw)
 
 
 async def main():
@@ -24,7 +44,7 @@ async def main():
         format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
     )
 
-    bot = Bot(BOT_TOKEN)
+    bot = Bot(read_settings('BOT_TOKEN'))
     dp = Dispatcher(storage=MemoryStorage())
 
     dp.update.outer_middleware(UserData())

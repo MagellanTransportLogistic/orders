@@ -8,8 +8,8 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message, ReplyKeyboardRemove
 
-from main.addons.telegram_bot.keyboards.simple_row import make_row_keyboard
-from magellan_web.settings import MEDIA_ROOT
+from ..keyboards.simple_row import make_row_keyboard
+from ..bot import read_settings
 
 router_send_doc = Router()
 
@@ -66,9 +66,9 @@ async def received_message(message: Message, state: FSMContext, path: str):
 
         # Что-то прислали.
         if mime_type in ['image/png', 'image/jpeg']:
-            create_path_tree('', [MEDIA_ROOT, 'bot/', path])
+            create_path_tree('', [read_settings('MEDIA_PATH'), 'bot/', path])
 
-            await message.bot.download(file_id, os.path.join(MEDIA_ROOT, 'bot/', path, file_name))
+            await message.bot.download(file_id, os.path.join(read_settings('MEDIA_PATH'), 'bot/', path, file_name))
             await message.answer(
                 text=f"Файл: {user_data['send_doc'].file_name} принят, спасибо.",
                 reply_markup=ReplyKeyboardRemove()

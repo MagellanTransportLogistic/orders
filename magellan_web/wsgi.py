@@ -46,4 +46,3 @@ def check_order_state(repeat_delay_seconds=5):
 
 
 check_order_state(10)
-load_telegram_bot()

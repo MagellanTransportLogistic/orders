@@ -4,8 +4,8 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message, ReplyKeyboardRemove
 
-from main.addons.telegram_bot.keyboards.simple_row import make_row_keyboard
-from main.addons.telegram_bot.services.database import add_user_to_db, change_user_role
+from ..keyboards.simple_row import make_row_keyboard
+from ..services.database import add_user_to_db, change_user_role
 
 router_change_user = Router()
 
