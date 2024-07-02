@@ -5,7 +5,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
 from aiogram.types import Message, ReplyKeyboardRemove
 
-from ..services.database import get_admin_count
+from services.database import get_admin_count
 
 router_common = Router()
 

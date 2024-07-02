@@ -4,8 +4,8 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message, ReplyKeyboardRemove
 
-from ..keyboards.simple_row import make_row_keyboard
-from ..services.database import add_user_to_db
+from keyboards.simple_row import make_row_keyboard
+from services.database import add_user_to_db
 
 router_register_user = Router()
 

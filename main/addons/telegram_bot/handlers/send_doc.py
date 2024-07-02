@@ -8,8 +8,8 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message, ReplyKeyboardRemove
 
-from ..keyboards.simple_row import make_row_keyboard
-from ..bot import read_settings
+from keyboards.simple_row import make_row_keyboard
+from bot import read_settings
 
 router_send_doc = Router()
 

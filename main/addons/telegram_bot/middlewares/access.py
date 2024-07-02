@@ -4,7 +4,7 @@ from typing import Any, Callable, Dict, Awaitable
 from aiogram import BaseMiddleware
 from aiogram.types import TelegramObject
 
-from ..services.database import get_user_role, get_admin_count, get_user_path
+from services.database import get_user_role, get_admin_count, get_user_path
 
 
 # Проверка уровня доступа к системе.
