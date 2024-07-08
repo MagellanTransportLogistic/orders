@@ -8,6 +8,3 @@ python-dotenv==1.0.1
 mssql-django==1.5
 psycopg2==2.9.9
 pyodbc~=5.1.0
-aiogram~=3.8.0
-APScheduler~=3.10.4
-SQLAlchemy~=2.0.31
