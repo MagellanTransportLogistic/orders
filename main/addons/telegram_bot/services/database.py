@@ -1,6 +1,10 @@
+import uuid
+
 import sqlalchemy as db
+from sqlalchemy import text
 
 metadata = db.MetaData()
+
 bot_users = db.Table('bot_users', metadata,
                      db.Column('user_id', db.BIGINT, primary_key=True, autoincrement=False, nullable=False,
                                unique=True),
@@ -8,6 +12,12 @@ bot_users = db.Table('bot_users', metadata,
                      db.Column('name', db.VARCHAR(256)),
                      db.Column('snils', db.VARCHAR(32), nullable=False, unique=True),
                      db.Column('role_id', db.Integer, nullable=False, default=1))
+
+bot_group_messages = db.Table('bot_group_messages', metadata,
+                              db.Column('group_id', db.BIGINT, autoincrement=False, nullable=False, ),
+                              db.Column('message_text', db.NVARCHAR(), nullable=False, ),
+                              db.Column('uuid', db.Uuid, primary_key=True, nullable=False,
+                                        server_default=text('newid()')), )
 
 
 def sql_start(_database="demo", _server='localhost', _login='admin', _passwd='pass'):
@@ -82,4 +92,25 @@ async def get_admin_count():
             return len(connection.execute(q).fetchall())
     except Exception as E:
         print(f'get_user_role: {E}')
+        return -1
+
+
+def get_group_messages():
+    try:
+        q = db.select(bot_group_messages)
+        with engine.connect() as connection:
+            return connection.execute(q).fetchall()
+    except Exception as E:
+        print(f'get_group_messages: {E}')
+        return -1
+
+
+def erase_group_message(message_uuid):
+    try:
+        q = db.delete(bot_group_messages).where(bot_group_messages.c.uuid == message_uuid)
+        with engine.connect() as connection:
+            connection.execute(q)
+            connection.commit()
+    except Exception as E:
+        print(f'get_group_messages: {E}')
         return -1

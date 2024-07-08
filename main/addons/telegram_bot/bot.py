@@ -4,11 +4,22 @@ import os
 
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
+from aiogram.types import Message
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 from dotenv import load_dotenv
 from handlers import common, register_user, remove_user, change_user, send_doc
 from middlewares.access import UserData
-from services.database import sql_start
+from services.database import sql_start, get_group_messages, erase_group_message
+
+
+async def check_group_messages(bot: Bot):
+    buffer = get_group_messages()
+    for k in buffer:
+        await asyncio.sleep(0.2)
+        result = await bot.send_message(chat_id=k[0], text=k[1], parse_mode='HTML')
+        if isinstance(result, Message):
+            erase_group_message(k[2])
 
 
 def read_settings(param_name: str):
@@ -29,16 +40,14 @@ def read_settings(param_name: str):
     return get_variable(param_name)
 
 
-def create_pool():
-    db_name = read_settings('SQL_DB_NAME')
-    db_host = read_settings('SQL_DB_HOST')
-    db_user = read_settings('SQL_DB_USER')
-    db_pasw = read_settings('SQL_DB_PASSWORD')
-
-    sql_start(db_name, db_host, db_user, db_pasw)
-
-
 async def main():
+    def on_start():
+        db_name = read_settings('SQL_DB_NAME')
+        db_host = read_settings('SQL_DB_HOST')
+        db_user = read_settings('SQL_DB_USER')
+        db_pasw = read_settings('SQL_DB_PASSWORD')
+        sql_start(db_name, db_host, db_user, db_pasw)
+
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
@@ -46,7 +55,7 @@ async def main():
 
     bot = Bot(read_settings('BOT_TOKEN'))
     dp = Dispatcher(storage=MemoryStorage())
-
+    scheduler = AsyncIOScheduler()
     dp.update.outer_middleware(UserData())
 
     dp.include_router(common.router_common)
@@ -55,8 +64,11 @@ async def main():
     dp.include_router(remove_user.router_remove_user)
     dp.include_router(send_doc.router_send_doc)
 
+    scheduler.add_job(check_group_messages, 'interval', seconds=5, args=[bot])
+
+    scheduler.start()
     await bot.delete_webhook(drop_pending_updates=True)
-    await dp.start_polling(bot, on_startup=create_pool())
+    await dp.start_polling(bot, on_startup=on_start())
 
 
 def load():

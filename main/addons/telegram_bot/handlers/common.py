@@ -29,6 +29,12 @@ async def cmd_start(message: Message, state: FSMContext, **kwargs):
     for cmd in commands:
         if cmd["lvl"] <= role_id:
             msg = msg + f'{cmd["name"]} - {cmd["description"]}' + chr(10)
+    if role_id > 1:
+        msg_type = kwargs.get('event_chat')
+        if msg_type:
+            if msg_type.type in ['supergroup', 'group']:
+                msg = msg + ' ' + chr(10)
+                msg = msg + f'Group ID: {message.chat.id}'
 
     if await get_admin_count() == 0:
         msg = msg + chr(10) + ('<i>Работа пользователей и ролей включится автоматически, '
