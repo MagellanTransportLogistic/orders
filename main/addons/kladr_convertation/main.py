@@ -114,7 +114,9 @@ def main():
     adding_country = [
         ('BL.txt', 'Белоруссия'),
         ('KZ.txt', 'Казахстан'),
-        ('CN.txt', 'Китай')
+        ('CN.txt', 'Китай'),
+        ('AMR.txt', 'Армения'),
+        ('TRK.txt', 'Турция')
     ]
     for cnt in adding_country:
         with open(f'ADDINS\\{cnt[0]}', 'r', encoding='utf8') as f:
