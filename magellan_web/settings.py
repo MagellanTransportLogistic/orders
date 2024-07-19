@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_filters',
+    'django_db_reconnect',
     'bootstrap_datepicker_plus',
     'widget_tweaks',
     'users',

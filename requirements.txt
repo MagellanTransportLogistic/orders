@@ -8,3 +8,4 @@ python-dotenv==1.0.1
 mssql-django==1.5
 psycopg2==2.9.9
 pyodbc~=5.1.0
+django-db-reconnect~=0.0.1

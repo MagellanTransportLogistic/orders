@@ -33,15 +33,18 @@ def start_new_thread(function):
 def check_order_state(repeat_delay_seconds=5):
     print(f'Loaded Orders visibility checker.' + chr(13) + chr(10))
     while True:
-        time_offset = datetime.now() - timedelta(hours=2)
-        order_list = OpenedOrder.objects.filter(created_at__lte=time_offset).filter(
-            visibility__in=[OpenedOrder.DIVISION, OpenedOrder.DEPARTMENT])
-        if order_list.count() > 0:
-            print(f'Found orders with private state: {order_list.count()}')
-        for order in order_list:
-            order.visibility = OpenedOrder.COMPANY
-            order.save()
-        sleep(repeat_delay_seconds)
+        try:
+            sleep(repeat_delay_seconds)
+            time_offset = datetime.now() - timedelta(hours=2)
+            order_list = OpenedOrder.objects.filter(created_at__lte=time_offset).filter(
+                visibility__in=[OpenedOrder.DIVISION, OpenedOrder.DEPARTMENT])
+            if order_list.count() > 0:
+                print(f'Found orders with private state: {order_list.count()}')
+            for order in order_list:
+                order.visibility = OpenedOrder.COMPANY
+                order.save()
+        except Exception as Err:
+            logging.log(level=logging.ERROR, msg=str(Err))
 
 
 check_order_state(10)
