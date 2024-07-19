@@ -36,6 +36,7 @@ def sql_start(_database="demo", _server='localhost', _login='admin', _passwd='pa
         engine = db.create_engine(database_url)
         try:
             engine.connect()
+            logging.log(msg='Database connected.', level=logging.INFO)
             break
         except Exception as Err:
             logging.log(msg=str(Err), level=logging.ERROR)
