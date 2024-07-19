@@ -163,3 +163,7 @@ cython_debug/
 /.run/
 /data.sqlite3
 /main/json/profiles.json
+/main/addons/kladr_convertation/*.dbf
+/main/addons/kladr_convertation/*.DBF
+/main/addons/kladr_convertation/KLADR/*.dbf
+/main/addons/kladr_convertation/KLADR/*.DBF

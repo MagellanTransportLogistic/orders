@@ -5,7 +5,7 @@ from dbfpy3 import dbf
 
 
 def read_dependencies():
-    db = dbf.Dbf("ALTNAMES.DBF")
+    db = dbf.Dbf("KLADR\\ALTNAMES.DBF")
     keys = {}
     for r in db:
         keys[r['OLDCODE']] = r['NEWCODE']
@@ -14,7 +14,7 @@ def read_dependencies():
 
 
 def read_levels():
-    db = dbf.Dbf("SOCRBASE.DBF")
+    db = dbf.Dbf("KLADR\\SOCRBASE.DBF")
     keys = {}
     for r in db:
         k = {r['SCNAME']: {'level': r['LEVEL'], 'name': r['SOCRNAME']}}
@@ -29,7 +29,7 @@ def main():
 
     codes = read_dependencies()
     keys = read_levels()
-    db = dbf.Dbf("KLADR.DBF")
+    db = dbf.Dbf("KLADR\\KLADR.DBF")
     for row in db:
         abr = row['SOCR']
         keys_data_level = keys.get(abr, {})
@@ -47,14 +47,14 @@ def main():
                 name = f"{row['NAME']} {row['SOCR']}"
 
                 data['raw'][code] = {
-                    '_subj': subj,
-                    '_region': region,
-                    '_city': city,
                     '_point': point,
+                    '_city': city,
+                    '_region': region,
+                    '_subj': subj,
                     'name': name
                 }
 
-    iter_keys = ['_subj', '_region', '_city', '_point']
+    iter_keys = ['_point', '_city', '_region', '_subj']
 
     for key in data['raw'].keys():
         for k in iter_keys:
@@ -76,7 +76,7 @@ def main():
                 else:
                     _name = f'{_name}, {text}'
         if len(_name) > 0:
-            data['raw'][key]['full_name'] = _name + ', ' + data['raw'][key]['name']
+            data['raw'][key]['full_name'] = data['raw'][key]['name'] + ', ' + _name
         # else:
         #     print(data['raw'][key])
 
@@ -110,6 +110,27 @@ def main():
 
     with open('locations.json', 'w', encoding='utf8') as f:
         f.write(json.dumps(data, indent=4, ensure_ascii=False))
+
+    adding_country = [
+        ('BL.txt', 'Белоруссия'),
+        ('KZ.txt', 'Казахстан'),
+        ('CN.txt', 'Китай')
+    ]
+    for cnt in adding_country:
+        with open(f'ADDINS\\{cnt[0]}', 'r', encoding='utf8') as f:
+            _code = 1
+            for line in f:
+                if len(line.strip()) == 0:
+                    continue
+                _uuid = str(uuid.uuid5(uuid.UUID('6e6281bb-2054-4d6e-a52d-d55d8fd04690'), f'{line} {cnt[1]}'))
+                data2['cities'].append(
+                    {
+                        'uuid': _uuid,
+                        'code': _code,
+                        'name': f'{line.rstrip().lstrip()}',
+                        'full_name': f'{line.rstrip().lstrip()} г, {cnt[1]}'
+                    })
+                _code += 1
 
     with open('locations_add.json', 'w', encoding='utf8') as f:
         f.write(json.dumps(data2, indent=4, ensure_ascii=False))
