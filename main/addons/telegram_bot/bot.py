@@ -46,7 +46,8 @@ async def main():
         db_host = read_settings('SQL_DB_HOST')
         db_user = read_settings('SQL_DB_USER')
         db_pasw = read_settings('SQL_DB_PASSWORD')
-        sql_start(db_name, db_host, db_user, db_pasw)
+        db_options = read_settings('SQL_OPTIONS')
+        sql_start(db_name, db_host, db_user, db_pasw, db_options)
 
     logging.basicConfig(
         level=logging.INFO,
