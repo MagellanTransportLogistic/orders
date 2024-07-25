@@ -180,7 +180,7 @@ class OrderModify(BaseClassContextMixin, OrdersUserLoginCheckMixin, UpdateView):
                 request.POST._mutable = True
                 order_number = OpenedOrder.objects.get(uuid=request.POST.get('uuid')).number
                 request.POST['created_at'] = OpenedOrder.objects.get(uuid=request.POST.get('uuid')).created_at
-                request.POST['visibility'] = OpenedOrder.objects.get(uuid=request.POST.get('uuid')).visibility
+                # request.POST['visibility'] = OpenedOrder.objects.get(uuid=request.POST.get('uuid')).visibility
                 request.POST['load_city'] = City.objects.get(full_name=request.POST['load_city'])
                 request.POST['ext_upload_city'] = City.objects.get(full_name=request.POST['ext_upload_city'])
                 request.POST['upload_city'] = City.objects.get(full_name=request.POST['upload_city'])
