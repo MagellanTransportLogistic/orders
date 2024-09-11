@@ -16,10 +16,14 @@ from services.database import sql_start, get_group_messages, erase_group_message
 async def check_group_messages(bot: Bot):
     buffer = get_group_messages()
     for k in buffer:
-        await asyncio.sleep(0.2)
-        result = await bot.send_message(chat_id=k[0], text=k[1], parse_mode='HTML')
-        if isinstance(result, Message):
-            erase_group_message(k[2])
+        await asyncio.sleep(0.5)
+        # Не будет останавливаться на одном некорректном сообщении. Но оно будет оставаться в буфере не отправленных.
+        try:
+            result = await bot.send_message(chat_id=k[0], text=k[1], parse_mode='HTML')
+            if isinstance(result, Message):
+                erase_group_message(k[2])
+        except Exception as e:
+            logging.critical(f'Error in message uuid: {str(k[2])}: {str(e)}')
 
 
 def read_settings(param_name: str):
