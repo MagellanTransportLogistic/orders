@@ -1,10 +1,14 @@
-from aiogram import F, Router
+from random import randint
+
+from aiogram import F, Router, types
 from aiogram.filters import Command
 from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
-from aiogram.types import Message, ReplyKeyboardRemove
-
+from aiogram.types import Message, ReplyKeyboardRemove, InlineKeyboardMarkup
+from aiogram.utils.keyboard import InlineKeyboardBuilder
+from aiogram.fsm.state import StatesGroup, State
+from handlers.register_user import router_register_user
 from services.database import get_admin_count
 
 router_common = Router()
@@ -18,6 +22,7 @@ commands = [
     {"lvl": 2, "name": "/register", "description": "Регистрация нового сотрудника в боте."},
     {"lvl": 2, "name": "/change_user", "description": "Изменение прав сотрудника в боте."},
     {"lvl": 2, "name": "/delete_user", "description": "Отключение сотрудника от бота."},
+    {"lvl": 1, "name": "/menu", "description": "Главное меню зарегистрированного пользователя."},
 ]
 
 

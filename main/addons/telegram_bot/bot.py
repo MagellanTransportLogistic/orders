@@ -8,10 +8,9 @@ from aiogram.types import Message
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 from dotenv import load_dotenv
-from handlers import common, register_user, remove_user, change_user, send_doc
+from handlers import common, register_user, remove_user, change_user, send_doc, main_menu
 from middlewares.access import UserData
 from services.database import sql_start, get_group_messages, erase_group_message
-
 
 async def check_group_messages(bot: Bot):
     buffer = get_group_messages()
@@ -26,8 +25,8 @@ async def check_group_messages(bot: Bot):
             logging.critical(f'Error in message uuid: {str(k[2])}: {str(e)}')
 
 
-def read_settings(param_name: str):
-    def get_variable(name: str, default_value: bool | None = None) -> str | None | bool:
+def read_settings(param_name: str, default_value: bool | None = None):
+    def get_variable(name: str) -> str | None | bool:
         true_ = ('true', '1', 't', 'yes')
         false_ = ('false', '0', 'f', 'no')
         value: str | None = os.getenv(name, None)
@@ -49,9 +48,10 @@ async def main():
         db_name = read_settings('SQL_DB_NAME')
         db_host = read_settings('SQL_DB_HOST')
         db_user = read_settings('SQL_DB_USER')
-        db_pasw = read_settings('SQL_DB_PASSWORD')
+        db_pass = read_settings('SQL_DB_PASSWORD')
         db_options = read_settings('SQL_OPTIONS')
-        sql_start(db_name, db_host, db_user, db_pasw, db_options)
+
+        sql_start(db_name, db_host, db_user, db_pass, db_options)
 
     logging.basicConfig(
         level=logging.INFO,
@@ -68,8 +68,11 @@ async def main():
     dp.include_router(change_user.router_change_user)
     dp.include_router(remove_user.router_remove_user)
     dp.include_router(send_doc.router_send_doc)
+    dp.include_router(main_menu.router_menu)
 
-    scheduler.add_job(check_group_messages, 'interval', seconds=5, args=[bot])
+    start_schedule = read_settings("ENABLE_SCHEDULE", True)
+    if start_schedule:
+        scheduler.add_job(check_group_messages, 'interval', seconds=5, args=[bot])
 
     scheduler.start()
     await bot.delete_webhook(drop_pending_updates=True)
