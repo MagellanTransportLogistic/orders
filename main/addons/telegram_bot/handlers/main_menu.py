@@ -481,10 +481,10 @@ async def cmd_im_leave(callback: types.CallbackQuery, state: FSMContext):
         types.InlineKeyboardButton(text="Тягач принял", callback_data="ev_change_tg_on")
     )
     builder.add(
-        types.InlineKeyboardButton(text="Прицеп сдал", callback_data="ev_change_pc_on")
+        types.InlineKeyboardButton(text="Прицеп сдал", callback_data="ev_change_pc_off")
     )
     builder.add(
-        types.InlineKeyboardButton(text="Прицеп сдал", callback_data="ev_change_pc_off")
+        types.InlineKeyboardButton(text="Прицеп принял", callback_data="ev_change_pc_on")
     )
     builder.add(types.InlineKeyboardButton(text="<- Назад", callback_data="main_menu"))
 
@@ -654,6 +654,7 @@ async def cmd_dynamic_fsm(message: Message, state: FSMContext, path: str):
             ),
             "w",
         ) as f:
+            create_path_tree("", [read_settings("MEDIA_PATH"), "bot/", path])
             f.write(json.dumps(_raw_data, ensure_ascii=False, indent=4))
         await message.answer(
             text=f"Данные успешно записаны.", reply_markup=ReplyKeyboardRemove()
