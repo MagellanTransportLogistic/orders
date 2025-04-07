@@ -295,7 +295,7 @@ async def cmd_im_arrive(callback: types.CallbackQuery, state: FSMContext):
     ):
         await asyncio.sleep(SEND_MESSAGE_DELAY)
         await callback.message.answer(
-            text="Прибытие: Выберите действие.",
+            text="Прибытие на загрузку/выгрузку: Выберите действие.",
             reply_markup=builder.as_markup(),
         )
         await callback.message.delete()
@@ -336,7 +336,7 @@ async def cmd_im_leave(callback: types.CallbackQuery, state: FSMContext):
     ):
         await asyncio.sleep(SEND_MESSAGE_DELAY)
         await callback.message.answer(
-            text="Убытие: Выберите действие.", reply_markup=builder.as_markup()
+            text="Убытие с загрузки/выгрузки: Выберите действие.", reply_markup=builder.as_markup()
         )
         await callback.message.delete()
         # await callback.message.edit_reply_markup(reply_markup=None)
