@@ -1,5 +1,6 @@
 import asyncio
 import json
+from typing import TypeIs
 
 from aiogram import F, Router, types
 from aiogram.filters import Command
@@ -11,12 +12,15 @@ from aiogram.fsm.state import StatesGroup, State
 import datetime
 import os
 
+from pydantic import InstanceOf
+
 from keyboards.simple_row import make_row_keyboard
 from aiogram.utils.chat_action import ChatActionSender
 
 router_menu = Router()
 
 register_menu_buttons = ["Отмена"]
+SEND_MESSAGE_DELAY = 0.2
 
 
 class Form(StatesGroup):
@@ -83,6 +87,8 @@ class Form(StatesGroup):
         'ev_fuel_not_station': {'int': 'Введите количество горючки', 'text': 'Комментарий'},
     }
 
+    init = State()
+    init_chain = State()
     init_event = State()
     init_action = State()
     actions = State()
@@ -109,39 +115,66 @@ class Form(StatesGroup):
         return ret
 
 
-@router_menu.message(Command("menu"))
-async def cmd_menu(message: types.Message, state: FSMContext, role_id: int):
-    if role_id > 0:
-        builder = InlineKeyboardBuilder()
-        builder.max_width = 2
-        builder.add(types.InlineKeyboardButton(
-            text="Прибытие",
-            callback_data="im_arrive"))
-        builder.add(types.InlineKeyboardButton(
-            text="Убытие",
-            callback_data="im_leave"))
-        builder.add(types.InlineKeyboardButton(
-            text="Финансы",
-            callback_data="im_money"))
-        builder.add(types.InlineKeyboardButton(
-            text="ГСМ",
-            callback_data="im_fuel"))
-        builder.add(types.InlineKeyboardButton(
-            text="Ремонт",
-            callback_data="im_repair"))
-        builder.add(types.InlineKeyboardButton(
-            text="Происшествие",
-            callback_data="im_event"))
-        builder.add(types.InlineKeyboardButton(
-            text="Смена ТС",
-            callback_data="im_change_tr"))
-        builder.add(types.InlineKeyboardButton(
-            text="Труд",
-            callback_data="im_work"))
+def create_main_keyboard():
+    builder = InlineKeyboardBuilder()
+    builder.max_width = 2
+    builder.add(types.InlineKeyboardButton(
+        text="Прибытие",
+        callback_data="im_arrive"))
+    builder.add(types.InlineKeyboardButton(
+        text="Убытие",
+        callback_data="im_leave"))
+    builder.add(types.InlineKeyboardButton(
+        text="Финансы",
+        callback_data="im_money"))
+    builder.add(types.InlineKeyboardButton(
+        text="ГСМ",
+        callback_data="im_fuel"))
+    builder.add(types.InlineKeyboardButton(
+        text="Ремонт",
+        callback_data="im_repair"))
+    builder.add(types.InlineKeyboardButton(
+        text="Происшествие",
+        callback_data="im_event"))
+    builder.add(types.InlineKeyboardButton(
+        text="Смена ТС",
+        callback_data="im_change_tr"))
+    builder.add(types.InlineKeyboardButton(
+        text="Труд",
+        callback_data="im_work"))
 
+    return builder
+
+
+@router_menu.callback_query(F.data == "main_menu")
+async def cmd_main_menu_callback(callback: types.CallbackQuery, state: FSMContext, role_id: int):
+    await state.clear()
+    if role_id > 0:
+        builder = create_main_keyboard()
+        async with ChatActionSender.typing(bot=callback.message.bot, chat_id=callback.message.chat.id):
+            await asyncio.sleep(SEND_MESSAGE_DELAY)
+            await callback.message.answer(
+                text='Выберите событие.',
+                reply_markup=builder.as_markup()
+            )
+        await callback.message.delete()
+        # await callback.message.edit_reply_markup(reply_markup=None)
+        await state.set_state(Form.init_event)
+    else:
+        await callback.message.answer(
+            text="ВЫ должны быть зарегистрированы, чтобы использовать данную команду"
+        )
+
+
+@router_menu.message(Command("menu"))
+async def cmd_main_menu(message: types.Message, state: FSMContext, role_id: int):
+    await state.clear()
+    if role_id > 0:
+        builder = create_main_keyboard()
         await state.clear()
+
         async with ChatActionSender.typing(bot=message.bot, chat_id=message.chat.id):
-            await asyncio.sleep(2)
+            await asyncio.sleep(SEND_MESSAGE_DELAY)
             await message.answer(
                 text='Выберите событие.',
                 reply_markup=builder.as_markup()
@@ -169,13 +202,18 @@ async def cmd_im_arrive(callback: types.CallbackQuery, state: FSMContext):
     builder.add(types.InlineKeyboardButton(
         text="На ремонт",
         callback_data="ev_arrive_repair"))
+    builder.add(types.InlineKeyboardButton(
+        text="<- Назад",
+        callback_data="main_menu"))
+
     async with ChatActionSender.typing(bot=callback.message.bot, chat_id=callback.message.chat.id):
-        await asyncio.sleep(2)
+        await asyncio.sleep(SEND_MESSAGE_DELAY)
         await callback.message.answer(
-            text='(Прибытие). Выберите действие.',
-            reply_markup=builder.as_markup()
+            text='Прибытие: Выберите действие.',
+            reply_markup=builder.as_markup(),
         )
-        await callback.message.edit_reply_markup(reply_markup=None)
+        await callback.message.delete()
+        # await callback.message.edit_reply_markup(reply_markup=None)
     await state.set_state(Form.init_action)
 
 
@@ -201,14 +239,18 @@ async def cmd_im_leave(callback: types.CallbackQuery, state: FSMContext):
     builder.add(types.InlineKeyboardButton(
         text="Переадресация",
         callback_data="ev_leave_reroute"))
+    builder.add(types.InlineKeyboardButton(
+        text="<- Назад",
+        callback_data="main_menu"))
 
     async with ChatActionSender.typing(bot=callback.message.bot, chat_id=callback.message.chat.id):
-        await asyncio.sleep(2)
+        await asyncio.sleep(SEND_MESSAGE_DELAY)
         await callback.message.answer(
-            text='(Убытие). Выберите действие.',
+            text='Убытие: Выберите действие.',
             reply_markup=builder.as_markup()
         )
-        await callback.message.edit_reply_markup(reply_markup=None)
+        await callback.message.delete()
+        # await callback.message.edit_reply_markup(reply_markup=None)
     await state.set_state(Form.init_action)
 
 
@@ -225,14 +267,18 @@ async def cmd_im_leave(callback: types.CallbackQuery, state: FSMContext):
     builder.add(types.InlineKeyboardButton(
         text="Приход",
         callback_data="ev_money_add"))
+    builder.add(types.InlineKeyboardButton(
+        text="<- Назад",
+        callback_data="main_menu"))
 
     async with ChatActionSender.typing(bot=callback.message.bot, chat_id=callback.message.chat.id):
-        await asyncio.sleep(2)
+        await asyncio.sleep(SEND_MESSAGE_DELAY)
         await callback.message.answer(
-            text='(Деньги). Выберите действие.',
+            text='Деньги: Выберите действие.',
             reply_markup=builder.as_markup()
         )
-        await callback.message.edit_reply_markup(reply_markup=None)
+        # await callback.message.edit_reply_markup(reply_markup=None)
+        await callback.message.delete()
     await state.set_state(Form.init_action)
 
 
@@ -255,14 +301,18 @@ async def cmd_im_leave(callback: types.CallbackQuery, state: FSMContext):
     builder.add(types.InlineKeyboardButton(
         text="Не на АЗС",
         callback_data="ev_fuel_not_station"))
+    builder.add(types.InlineKeyboardButton(
+        text="<- Назад",
+        callback_data="main_menu"))
 
     async with ChatActionSender.typing(bot=callback.message.bot, chat_id=callback.message.chat.id):
-        await asyncio.sleep(2)
+        await asyncio.sleep(SEND_MESSAGE_DELAY)
         await callback.message.answer(
-            text='(ГСМ). Выберите действие.',
+            text='ГСМ: Выберите действие.',
             reply_markup=builder.as_markup()
         )
-        await callback.message.edit_reply_markup(reply_markup=None)
+        # await callback.message.edit_reply_markup(reply_markup=None)
+        await callback.message.delete()
     await state.set_state(Form.init_action)
 
 
@@ -276,14 +326,18 @@ async def cmd_im_leave(callback: types.CallbackQuery, state: FSMContext):
     builder.add(types.InlineKeyboardButton(
         text="Ремонт выполнен",
         callback_data="ev_repair_done"))
+    builder.add(types.InlineKeyboardButton(
+        text="<- Назад",
+        callback_data="main_menu"))
 
     async with ChatActionSender.typing(bot=callback.message.bot, chat_id=callback.message.chat.id):
-        await asyncio.sleep(2)
+        await asyncio.sleep(SEND_MESSAGE_DELAY)
         await callback.message.answer(
-            text='(Ремонт). Выберите действие.',
+            text='Ремонт: Выберите действие.',
             reply_markup=builder.as_markup()
         )
-        await callback.message.edit_reply_markup(reply_markup=None)
+        # await callback.message.edit_reply_markup(reply_markup=None)
+        await callback.message.delete()
     await state.set_state(Form.init_action)
 
 
@@ -306,14 +360,18 @@ async def cmd_im_leave(callback: types.CallbackQuery, state: FSMContext):
     builder.add(types.InlineKeyboardButton(
         text="Медпомощь",
         callback_data="ev_event_medicine"))
+    builder.add(types.InlineKeyboardButton(
+        text="<- Назад",
+        callback_data="main_menu"))
 
     async with ChatActionSender.typing(bot=callback.message.bot, chat_id=callback.message.chat.id):
-        await asyncio.sleep(2)
+        await asyncio.sleep(SEND_MESSAGE_DELAY)
         await callback.message.answer(
-            text='(Происшествие). Выберите действие.',
+            text='Происшествие: Выберите действие.',
             reply_markup=builder.as_markup()
         )
-        await callback.message.edit_reply_markup(reply_markup=None)
+        # await callback.message.edit_reply_markup(reply_markup=None)
+        await callback.message.delete()
     await state.set_state(Form.init_action)
 
 
@@ -333,14 +391,18 @@ async def cmd_im_leave(callback: types.CallbackQuery, state: FSMContext):
     builder.add(types.InlineKeyboardButton(
         text="Прицеп сдал",
         callback_data="ev_change_pc_off"))
+    builder.add(types.InlineKeyboardButton(
+        text="<- Назад",
+        callback_data="main_menu"))
 
     async with ChatActionSender.typing(bot=callback.message.bot, chat_id=callback.message.chat.id):
-        await asyncio.sleep(2)
+        await asyncio.sleep(SEND_MESSAGE_DELAY)
         await callback.message.answer(
-            text='(Смена ТС). Выберите действие.',
+            text='Смена ТС: Выберите действие.',
             reply_markup=builder.as_markup()
         )
-        await callback.message.edit_reply_markup(reply_markup=None)
+        # await callback.message.edit_reply_markup(reply_markup=None)
+        await callback.message.delete()
     await state.set_state(Form.init_action)
 
 
@@ -363,14 +425,18 @@ async def cmd_im_leave(callback: types.CallbackQuery, state: FSMContext):
     builder.add(types.InlineKeyboardButton(
         text="Больничный",
         callback_data="ev_work_i_can_die"))
+    builder.add(types.InlineKeyboardButton(
+        text="<- Назад",
+        callback_data="main_menu"))
 
     async with ChatActionSender.typing(bot=callback.message.bot, chat_id=callback.message.chat.id):
-        await asyncio.sleep(2)
+        await asyncio.sleep(SEND_MESSAGE_DELAY)
         await callback.message.answer(
-            text='(Труд). Выберите действие.',
+            text='Труд: Выберите действие.',
             reply_markup=builder.as_markup()
         )
-        await callback.message.edit_reply_markup(reply_markup=None)
+        # await callback.message.edit_reply_markup(reply_markup=None)
+        await callback.message.delete()
     await state.set_state(Form.init_action)
 
 
@@ -430,7 +496,6 @@ async def cmd_dynamic_fsm(message: Message, state: FSMContext, path: str):
                 reply_markup=make_row_keyboard(register_menu_buttons)
 
             )
-            print(f'send_doc:received_message: {E}')
             return
         if user_data.get('send_doc') is not None:
             file_id = user_data['send_doc'].file_id
@@ -485,4 +550,8 @@ async def cmd_dynamic_fsm(message: Message, state: FSMContext, path: str):
         file_name = f"{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}.json"
         with open(os.path.join(os.path.join(read_settings('MEDIA_PATH'), 'bot/', path, file_name)), 'w') as f:
             f.write(json.dumps(_raw_data, ensure_ascii=False, indent=4))
+        await message.answer(
+            text=f"Данные успешно записаны.",
+            reply_markup=ReplyKeyboardRemove()
+        )
         await state.clear()
